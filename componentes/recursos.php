@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../class/conexion.php';
+require_once __DIR__ . '/class/conexion.php';
 require_once __DIR__ . '/menu_cabecera.php';
 require_once __DIR__ . '/auth.php';
 

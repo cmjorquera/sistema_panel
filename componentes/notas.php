@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../class/conexion.php';
+require_once __DIR__ . '/class/conexion.php';
 require_once __DIR__ . '/rail_acciones.php';
 require_once __DIR__ . '/panel_contactos.php';
 require_once __DIR__ . '/keep_widget.php';
