@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../class/conexion.php';
+require_once __DIR__ . '/class/conexion.php';
 require_once __DIR__ . '/rail_acciones.php';
 require_once __DIR__ . '/panel_contactos.php';
 require_once __DIR__ . '/keep_widget.php';
@@ -93,7 +93,7 @@ $db->cerrar();
       </div>
       <nav class="topbar__nav">
         <?php if (empty($menusCabecera)): ?>
-          <a class="navlink" href="index_2.php">Inicio</a>
+          <a class="navlink" href="index.php">Inicio</a>
           <a class="navlink is-active" href="apps.php">Apps</a>
           <a class="navlink" href="contactos.php">Contactos</a>
           <a class="navlink" href="notas.php">Notas</a>

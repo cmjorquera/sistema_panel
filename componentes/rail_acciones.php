@@ -11,7 +11,7 @@ function obtenerUsuariosCalendario(): array
     $usuarios = [];
 
     if (!class_exists('Conexion')) {
-        $conexionPath = __DIR__ . '/../class/conexion.php';
+        $conexionPath = __DIR__ . '/class/conexion.php';
         if (is_file($conexionPath)) {
             require_once $conexionPath;
         }
