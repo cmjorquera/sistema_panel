@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../sistema_ticket/conexion.php';
+require_once __DIR__ . '/class/conexion.php';
 require_once __DIR__ . '/componentes/rail_acciones.php';
 require_once __DIR__ . '/componentes/panel_contactos.php';
 require_once __DIR__ . '/componentes/keep_widget.php';
