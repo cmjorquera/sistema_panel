@@ -1,7 +1,2 @@
 repositorio 
 https://github.com/cmjorquera/sistema_panel.git
-
-
-
-conexion por ssh 
-git@github.com:cmjorquera/sistema_panel.git
