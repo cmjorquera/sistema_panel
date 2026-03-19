@@ -9,3 +9,5 @@
     guadalupe jorquera 
 </body>
 </html>
+<!-- https://qa.seduc.cl/jorquera/sistema_panel/index_1.php
+https://qa.seduc.cl/jorquera/sistema_panel/index_1.php -->
