@@ -81,7 +81,7 @@ function obtenerContenedores(mysqli $conn): array
 $db = new Conexion();
 $conn = $db->getConexion();
 $menusCabecera = menus_cabezera($conn);
-$paginaActual = basename($_SERVER['PHP_SELF'] ?? 'index_2.php');
+$paginaActual = basename($_SERVER['PHP_SELF'] ?? 'index.php');
 $contenedores = obtenerContenedores($conn);
 $db->cerrar();
 ?>
@@ -552,7 +552,7 @@ a{color:inherit;text-decoration:none}
 
       <nav class="topbar__nav">
         <?php if (empty($menusCabecera)): ?>
-          <a class="navlink is-active" href="index_2.php">Inicio</a>
+          <a class="navlink is-active" href="index.php">Inicio</a>
           <a class="navlink" href="apps.php">Apps</a>
           <a class="navlink" href="contactos.php">Contactos</a>
           <a class="navlink" href="notas.php">Notas</a>

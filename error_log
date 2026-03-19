@@ -1,10 +1,10 @@
 [19-Mar-2026 12:19:43 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
 [19-Mar-2026 12:19:43 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
-[19-Mar-2026 09:19:43 America/santiago] PHP Warning:  require_once(/home/qaseduc/public_html/jorquera/sistema_panel/sistema_ticket/conexion.php): Failed to open stream: No such file or directory in /home/qaseduc/public_html/jorquera/sistema_panel/index_2.php on line 3
-[19-Mar-2026 09:19:43 America/santiago] PHP Fatal error:  Uncaught Error: Failed opening required '/home/qaseduc/public_html/jorquera/sistema_panel/sistema_ticket/conexion.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/qaseduc/public_html/jorquera/sistema_panel/index_2.php:3
+[19-Mar-2026 09:19:43 America/santiago] PHP Warning:  require_once(/home/qaseduc/public_html/jorquera/sistema_panel/sistema_ticket/conexion.php): Failed to open stream: No such file or directory in /home/qaseduc/public_html/jorquera/sistema_panel/index.php on line 3
+[19-Mar-2026 09:19:43 America/santiago] PHP Fatal error:  Uncaught Error: Failed opening required '/home/qaseduc/public_html/jorquera/sistema_panel/sistema_ticket/conexion.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/qaseduc/public_html/jorquera/sistema_panel/index.php:3
 Stack trace:
 #0 {main}
-  thrown in /home/qaseduc/public_html/jorquera/sistema_panel/index_2.php on line 3
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel/index.php on line 3
 [19-Mar-2026 12:20:12 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
 [19-Mar-2026 12:20:12 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
 [19-Mar-2026 09:20:12 America/santiago] PHP Warning:  require_once(/home/qaseduc/public_html/jorquera/sistema_panel/sistema_ticket/conexion.php): Failed to open stream: No such file or directory in /home/qaseduc/public_html/jorquera/sistema_panel/index.php on line 3

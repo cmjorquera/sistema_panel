@@ -22,8 +22,8 @@ function obtenerRutaCanonicaMenuCabecera(array $menu): ?string
     $pagina = basename(trim((string)($menu['pagina'] ?? '')));
 
     $rutasCanonicas = [
-        'inicio' => 'index_2.php',
-        'home' => 'index_2.php',
+        'inicio' => 'index.php',
+        'home' => 'index.php',
         'apps' => 'apps.php',
         'aplicaciones' => 'apps.php',
         'contactos' => 'contactos.php',
