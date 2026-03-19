@@ -6,6 +6,6 @@
     <title>Document</title>
 </head>
 <body>
-    
+    <?php echo "FUNCIONA DEPLOY QA"; ?>
 </body>
 </html>
