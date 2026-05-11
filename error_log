@@ -1,0 +1,151 @@
+[19-Mar-2026 12:19:43 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[19-Mar-2026 12:19:43 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[19-Mar-2026 09:19:43 America/santiago] PHP Warning:  require_once(/home/qaseduc/public_html/jorquera/sistema_panel/sistema_ticket/conexion.php): Failed to open stream: No such file or directory in /home/qaseduc/public_html/jorquera/sistema_panel/index.php on line 3
+[19-Mar-2026 09:19:43 America/santiago] PHP Fatal error:  Uncaught Error: Failed opening required '/home/qaseduc/public_html/jorquera/sistema_panel/sistema_ticket/conexion.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/qaseduc/public_html/jorquera/sistema_panel/index.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel/index.php on line 3
+[19-Mar-2026 12:20:12 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[19-Mar-2026 12:20:12 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[19-Mar-2026 09:20:12 America/santiago] PHP Warning:  require_once(/home/qaseduc/public_html/jorquera/sistema_panel/sistema_ticket/conexion.php): Failed to open stream: No such file or directory in /home/qaseduc/public_html/jorquera/sistema_panel/index.php on line 3
+[19-Mar-2026 09:20:12 America/santiago] PHP Fatal error:  Uncaught Error: Failed opening required '/home/qaseduc/public_html/jorquera/sistema_panel/sistema_ticket/conexion.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/qaseduc/public_html/jorquera/sistema_panel/index.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel/index.php on line 3
+[19-Mar-2026 12:22:13 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[19-Mar-2026 12:22:13 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[19-Mar-2026 09:22:13 America/santiago] PHP Warning:  require_once(/home/qaseduc/public_html/jorquera/sistema_panel/sistema_ticket/conexion.php): Failed to open stream: No such file or directory in /home/qaseduc/public_html/jorquera/sistema_panel/index.php on line 3
+[19-Mar-2026 09:22:13 America/santiago] PHP Fatal error:  Uncaught Error: Failed opening required '/home/qaseduc/public_html/jorquera/sistema_panel/sistema_ticket/conexion.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/qaseduc/public_html/jorquera/sistema_panel/index.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel/index.php on line 3
+[19-Mar-2026 12:22:35 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[19-Mar-2026 12:22:35 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[19-Mar-2026 12:22:54 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[19-Mar-2026 12:22:54 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[19-Mar-2026 09:22:54 America/santiago] PHP Warning:  require_once(/home/qaseduc/public_html/jorquera/sistema_panel/componentes/../sistema_ticket/conexion.php): Failed to open stream: No such file or directory in /home/qaseduc/public_html/jorquera/sistema_panel/componentes/recursos.php on line 2
+[19-Mar-2026 09:22:54 America/santiago] PHP Fatal error:  Uncaught Error: Failed opening required '/home/qaseduc/public_html/jorquera/sistema_panel/componentes/../sistema_ticket/conexion.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/qaseduc/public_html/jorquera/sistema_panel/componentes/recursos.php:2
+Stack trace:
+#0 /home/qaseduc/public_html/jorquera/sistema_panel/recursos.php(6): require_once()
+#1 {main}
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel/componentes/recursos.php on line 2
+[19-Mar-2026 12:24:21 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[19-Mar-2026 12:24:21 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[19-Mar-2026 09:24:21 America/santiago] PHP Warning:  require_once(/home/qaseduc/public_html/jorquera/sistema_panel/componentes/sistema_ticket/conexion.php): Failed to open stream: No such file or directory in /home/qaseduc/public_html/jorquera/sistema_panel/componentes/recursos.php on line 2
+[19-Mar-2026 09:24:21 America/santiago] PHP Fatal error:  Uncaught Error: Failed opening required '/home/qaseduc/public_html/jorquera/sistema_panel/componentes/sistema_ticket/conexion.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/qaseduc/public_html/jorquera/sistema_panel/componentes/recursos.php:2
+Stack trace:
+#0 /home/qaseduc/public_html/jorquera/sistema_panel/recursos.php(6): require_once()
+#1 {main}
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel/componentes/recursos.php on line 2
+[10-May-2026 22:44:39 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[10-May-2026 22:44:39 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[10-May-2026 22:44:50 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[10-May-2026 22:44:50 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[10-May-2026 22:45:04 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[10-May-2026 22:45:04 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[10-May-2026 22:45:08 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[10-May-2026 22:45:08 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:47:51 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:47:51 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:47:55 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:47:55 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:47:59 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:47:59 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[10-May-2026 22:47:59 America/santiago] PHP Warning:  require_once(/home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/menu_cabecera.php): Failed to open stream: No such file or directory in /home/qaseduc/public_html/jorquera/sistema_panel-qa/capsulas.php on line 6
+[10-May-2026 22:47:59 America/santiago] PHP Fatal error:  Uncaught Error: Failed opening required '/home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/menu_cabecera.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/qaseduc/public_html/jorquera/sistema_panel-qa/capsulas.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel-qa/capsulas.php on line 6
+[11-May-2026 02:48:22 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:48:22 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[10-May-2026 22:48:23 America/santiago] PHP Fatal error:  Uncaught RuntimeException: No se encontro menu_cabecera.php en rutas esperadas. in /home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/apps.php:23
+Stack trace:
+#0 /home/qaseduc/public_html/jorquera/sistema_panel-qa/apps.php(2): require_once()
+#1 {main}
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/apps.php on line 23
+[11-May-2026 02:48:49 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:48:49 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[10-May-2026 22:48:49 America/santiago] PHP Warning:  require_once(/home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/menu_cabecera.php): Failed to open stream: No such file or directory in /home/qaseduc/public_html/jorquera/sistema_panel-qa/capsulas.php on line 6
+[10-May-2026 22:48:49 America/santiago] PHP Fatal error:  Uncaught Error: Failed opening required '/home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/menu_cabecera.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/qaseduc/public_html/jorquera/sistema_panel-qa/capsulas.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel-qa/capsulas.php on line 6
+[11-May-2026 02:49:26 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:49:26 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[10-May-2026 22:49:26 America/santiago] PHP Fatal error:  Uncaught RuntimeException: No se encontro menu_cabecera.php en rutas esperadas. in /home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/notas.php:22
+Stack trace:
+#0 /home/qaseduc/public_html/jorquera/sistema_panel-qa/notas.php(2): require_once()
+#1 {main}
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/notas.php on line 22
+[11-May-2026 02:49:31 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:49:31 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[10-May-2026 22:49:31 America/santiago] PHP Fatal error:  Uncaught RuntimeException: No se encontro menu_cabecera.php en rutas esperadas. in /home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/contactos.php:22
+Stack trace:
+#0 /home/qaseduc/public_html/jorquera/sistema_panel-qa/contactos.php(2): require_once()
+#1 {main}
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/contactos.php on line 22
+[11-May-2026 02:49:37 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:49:37 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[10-May-2026 22:49:38 America/santiago] PHP Fatal error:  Uncaught RuntimeException: No se encontro menu_cabecera.php en rutas esperadas. in /home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/apps.php:23
+Stack trace:
+#0 /home/qaseduc/public_html/jorquera/sistema_panel-qa/apps.php(2): require_once()
+#1 {main}
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/apps.php on line 23
+[11-May-2026 02:49:47 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:49:47 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[10-May-2026 22:49:47 America/santiago] PHP Fatal error:  Uncaught RuntimeException: No se encontro menu_cabecera.php en rutas esperadas. in /home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/apps.php:23
+Stack trace:
+#0 /home/qaseduc/public_html/jorquera/sistema_panel-qa/apps.php(2): require_once()
+#1 {main}
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/apps.php on line 23
+[11-May-2026 02:49:49 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:49:49 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[10-May-2026 22:49:49 America/santiago] PHP Fatal error:  Uncaught RuntimeException: No se encontro menu_cabecera.php en rutas esperadas. in /home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/apps.php:23
+Stack trace:
+#0 /home/qaseduc/public_html/jorquera/sistema_panel-qa/apps.php(2): require_once()
+#1 {main}
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/apps.php on line 23
+[11-May-2026 02:49:57 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:49:57 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:50:01 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:50:01 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[10-May-2026 22:50:01 America/santiago] PHP Warning:  require_once(/home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/menu_cabecera.php): Failed to open stream: No such file or directory in /home/qaseduc/public_html/jorquera/sistema_panel-qa/capsulas.php on line 6
+[10-May-2026 22:50:01 America/santiago] PHP Fatal error:  Uncaught Error: Failed opening required '/home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/menu_cabecera.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/qaseduc/public_html/jorquera/sistema_panel-qa/capsulas.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel-qa/capsulas.php on line 6
+[11-May-2026 02:50:24 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:50:24 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[10-May-2026 22:50:24 America/santiago] PHP Warning:  require_once(/home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/menu_cabecera.php): Failed to open stream: No such file or directory in /home/qaseduc/public_html/jorquera/sistema_panel-qa/seduc_informa.php on line 6
+[10-May-2026 22:50:24 America/santiago] PHP Fatal error:  Uncaught Error: Failed opening required '/home/qaseduc/public_html/jorquera/sistema_panel-qa/componentes/menu_cabecera.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home/qaseduc/public_html/jorquera/sistema_panel-qa/seduc_informa.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/qaseduc/public_html/jorquera/sistema_panel-qa/seduc_informa.php on line 6
+[11-May-2026 02:53:52 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:53:52 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:53:55 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:53:55 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:53:56 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:53:57 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:53:59 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:53:59 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:54:00 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:54:00 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:54:02 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:54:02 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:54:04 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:54:04 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:54:09 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:54:09 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:54:12 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:54:12 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:54:42 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:54:42 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:56:04 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:56:04 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:56:09 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:56:09 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:56:32 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:56:32 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0
+[11-May-2026 02:56:35 UTC] PHP Warning:  Module "exif" is already loaded in Unknown on line 0
+[11-May-2026 02:56:35 UTC] PHP Warning:  Module "fileinfo" is already loaded in Unknown on line 0

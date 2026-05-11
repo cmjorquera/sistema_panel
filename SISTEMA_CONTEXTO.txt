@@ -1,0 +1,432 @@
+================================================================================
+  SEDUC HUB — PORTAL OPERATIVO (PANEL CENTRAL)
+  Documento de contexto del sistema — para uso en nuevas conversaciones o IAs
+  Última actualización: 2026-05-11
+================================================================================
+
+--------------------------------------------------------------------------------
+1. DESCRIPCIÓN GENERAL
+--------------------------------------------------------------------------------
+Sistema web interno de SEDUC (Servicios de Educación).
+Nombre: "Seduc Hub – Portal Operativo"
+URL QA:  qa.seduc.cl/jorquera/sistema_panel_qa/
+Tipo:    Portal intranet para funcionarios. PHP + MySQL. Sin framework.
+
+El sistema sirve como punto central de acceso a:
+  - Información personal del funcionario (liquidaciones, documentos, perfil)
+  - Beneficios y convenios institucionales
+  - Comunicación interna (seduc informa, cápsulas de ciberseguridad)
+  - Agenda y calendario de eventos institucionales
+  - Accesos rápidos a otras aplicaciones (apps)
+
+--------------------------------------------------------------------------------
+2. CONEXIÓN A BASE DE DATOS
+--------------------------------------------------------------------------------
+Archivo:   class/conexion.php
+Clase:     MySQL  (wrapper sobre MySQLi)
+Subclase:  Conexion extends MySQL  (la que se instancia en cada página)
+
+  Host:    localhost
+  BD:      qaseduc_panel
+  Usuario: qaseduc_ucomun
+  Clave:   jorquera86;
+  Charset: utf8mb4 / utf8mb4_general_ci
+
+Uso típico en cada página PHP:
+  $db   = new Conexion();
+  $conn = $db->getConexion();   // devuelve el objeto mysqli
+  // ... queries ...
+  $db->cerrar();
+
+--------------------------------------------------------------------------------
+3. ARQUITECTURA DE ARCHIVOS
+--------------------------------------------------------------------------------
+
+RAÍZ (páginas principales)
+  index_1.php          Dashboard / portal principal con accesos directos
+  validar.php          Login — autenticación con control de intentos fallidos
+  logout.php           Cierre de sesión
+  perfil.php           Perfil del usuario autenticado
+  liquidaciones.php    Liquidaciones de sueldo del funcionario
+  documentos.php       Documentos personales del funcionario
+  beneficio.php        Galería de convenios/beneficios filtrable por tipo
+  admin_convenios.php  CRUD completo de convenios (sólo admin)
+  contactos.php        Agenda de contactos (pendiente conectar BD)
+  notas.php            Notas rápidas tipo Google Keep (pendiente conectar BD)
+  recursos.php         Recursos institucionales / formularios / plantillas
+  eventos.php          Calendario de eventos institucionales (datos demo, BD pendiente)
+  seduc_informa.php    Portal informativo SEDUC (datos estáticos, BD pendiente)
+  capsulas.php         Cápsulas de ciberseguridad (datos estáticos, BD pendiente)
+  apps.php             Listado de aplicaciones externas con accesos directos
+  lupe.php             [utilitario / página menor]
+  prueba.php           [archivo de pruebas]
+
+COMPONENTES (include/require en páginas)
+  componentes/menu_cabecera.php   Menú de navegación principal (lee tabla menu_h)
+                                   + función renderTopbarUserMenu()
+  componentes/rail_acciones.php   Barra lateral derecha: acciones rápidas,
+                                   mini calendario, botón de notas y contactos
+  componentes/panel_contactos.php Panel lateral de contactos del equipo
+  componentes/keep_widget.php     Widget de notas rápidas (guarda en localStorage,
+                                   no usa BD todavía)
+  componentes/conexion.php        [copia/alias de conexión para componentes]
+  componentes/auth.php            Función iniciarSesionPanel() — gestión de sesión
+  componentes/apps.php            Variante del listado de apps
+
+CLASES
+  class/conexion.php  Clase MySQL con métodos: consulta(), fetch_assoc(),
+                      fetch_array(), prepare(), guardar(), escape_string(),
+                      getConexion(), cerrar(), ultimo_id()
+
+--------------------------------------------------------------------------------
+4. TABLAS DE BASE DE DATOS
+--------------------------------------------------------------------------------
+
+================================================
+TABLAS ACTIVAS EN PRODUCCIÓN
+================================================
+
+────────────────────────────────────────────────
+TABLA: menu_h
+────────────────────────────────────────────────
+Propósito: Define dinámicamente los ítems del menú de navegación principal.
+           Cada fila = un ítem del topbar. Al agregar una fila aquí, aparece
+           automáticamente en el menú de todas las páginas.
+
+Columnas:
+  id_menu_h          INT  PK AUTO_INCREMENT
+  menu               VARCHAR  — Texto a mostrar en el menú (ej: "Inicio", "eventos")
+  pagina             VARCHAR  — Archivo PHP destino (ej: "index_1.php", "eventos.php")
+  carpeta            VARCHAR  — Subcarpeta si aplica (normalmente vacío)
+  icono              VARCHAR  — (reservado, no usado actualmente)
+  orden              INT      — Orden de aparición en el menú (ASC)
+  final              VARCHAR  — "no" por defecto
+  activo             TINYINT  — 1 = visible, 0 = oculto
+  fecha_creacion     DATETIME
+  fecha_actualizacion DATETIME
+
+Datos actuales (8 filas):
+  1 Inicio        → index_1.php      orden 1
+  2 Apps          → apps.php         orden 2
+  3 Contactos     → contactos.php    orden 3
+  4 Notas         → notas.php        orden 4
+  5 Beneficios    → beneficio.php    orden 5
+  6 seduc Informa → seduc_informa.php orden 6
+  7 Informativo   → capsulas.php     orden 7
+  8 eventos       → eventos.php      orden 8
+  (Recursos se agrega automático por código como ítem fijo, orden 999)
+
+Archivos que la usan:
+  componentes/menu_cabecera.php → función menus_cabezera($conn)
+
+IMPORTANTE: La columna "pagina" es la fuente de verdad del href del menú.
+No existe mapeo hardcodeado; si se agrega fila a esta tabla, aparece solo.
+
+────────────────────────────────────────────────
+TABLA: usuarios
+────────────────────────────────────────────────
+Propósito: Autenticación y datos de perfil de los usuarios del panel.
+
+Columnas:
+  id                 INT PK AUTO_INCREMENT
+  nombre             VARCHAR
+  apellido_paterno   VARCHAR
+  apellido_materno   VARCHAR
+  email              VARCHAR  — usado como login (único)
+  clave              VARCHAR  — hash de contraseña
+  cargo              VARCHAR  — ej: "Analista Programador"
+  intentos_fallidos  INT      — bloqueo tras 3 intentos fallidos
+  estado             TINYINT  — 1 = activo
+  foto               VARCHAR  — ruta relativa a imagen de perfil
+
+Archivos que la usan:
+  validar.php          → SELECT por email, UPDATE intentos_fallidos
+  componentes/auth.php → función iniciarSesionPanel()
+  componentes/rail_acciones.php → obtenerUsuariosCalendario() (busca en "usuario"
+                                  o "usuarios", nombre flexible)
+
+────────────────────────────────────────────────
+TABLA: contenedor
+────────────────────────────────────────────────
+Propósito: Accesos directos / apps que aparecen en el dashboard (index_1.php).
+           Cada fila es una tarjeta con ícono, nombre y URL.
+
+Columnas:
+  id          INT PK AUTO_INCREMENT
+  nombre      VARCHAR(150) — Nombre del acceso (ej: "SGP", "Google Drive")
+  url_        VARCHAR(255) — URL de destino
+  imagen      VARCHAR      — Nombre de archivo en carpeta /imagenes/
+
+Archivos que la usan:
+  index_1.php → SELECT id, nombre, url_, imagen WHERE id_usuario = 1
+
+────────────────────────────────────────────────
+TABLA: convenios
+────────────────────────────────────────────────
+Propósito: Convenios y beneficios disponibles para funcionarios.
+           Se muestran en beneficio.php y se administran en admin_convenios.php.
+
+Columnas:
+  id_convenio    INT PK AUTO_INCREMENT
+  id_tipo        INT  FK → tipo_convenio.id_tipo
+  empresa        VARCHAR  — Nombre de la empresa/proveedor
+  descripcion    TEXT     — Descripción del beneficio
+  descuento      VARCHAR  — Ej: "20%", "precio preferencial"
+  imagen         VARCHAR  — Nombre de archivo en carpeta /imagenes/
+  url            VARCHAR  — Sitio web del convenio
+  fecha_inicio   DATE
+  fecha_termino  DATE
+  activo         TINYINT(1)  — 1 = visible en beneficio.php
+  destacado      TINYINT(1)  — 1 = aparece primero (ORDER BY destacado DESC)
+
+Archivos que la usan:
+  beneficio.php        → SELECT con LEFT JOIN tipo_convenio, filtro por id_tipo
+  admin_convenios.php  → SELECT, INSERT, UPDATE, DELETE completo (CRUD)
+
+────────────────────────────────────────────────
+TABLA: tipo_convenio
+────────────────────────────────────────────────
+Propósito: Categorías de convenios para filtrar en beneficio.php.
+
+Columnas:
+  id_tipo    INT PK AUTO_INCREMENT
+  nombre     VARCHAR  — Nombre de la categoría (ej: "Salud", "Educación")
+  icono      VARCHAR  — Emoji o código de ícono
+  orden      INT      — Orden de aparición
+
+Relación: 1 tipo_convenio → N convenios (FK convenios.id_tipo)
+
+Archivos que la usan:
+  beneficio.php        → SELECT para poblar filtros
+  admin_convenios.php  → SELECT para desplegable de tipo en formulario
+
+================================================
+TABLAS PLANIFICADAS (estructura SQL documentada en código, sin BD real todavía)
+================================================
+
+────────────────────────────────────────────────
+TABLA: eventos  (pendiente)
+────────────────────────────────────────────────
+Archivo referencia: eventos.php (comentado al inicio)
+Propósito: Calendario de eventos institucionales SEDUC.
+           Hoy usa datos de demostración hardcodeados en PHP.
+
+Columnas planificadas:
+  id                       INT PK AUTO_INCREMENT
+  titulo                   VARCHAR(255)
+  descripcion              TEXT
+  fecha_inicio             DATE
+  fecha_fin                DATE
+  hora_inicio              TIME
+  hora_fin                 TIME
+  hora_evento              TIME
+  con_audio                TINYINT(1)
+  solo_presentacion        TINYINT(1)
+  musica_ambiental         TINYINT(1)
+  cantidad_personas        INT
+  ubicacion                VARCHAR(255)
+  tipo_evento              VARCHAR  — reunion|capacitacion|directivo|ceremonia|
+                                      consejo|jornada|visita|academico|apoderados
+  estado                   VARCHAR  — confirmado|tentativo|cancelado
+  color_evento             VARCHAR(7) — hex, ej: "#1a56e8"
+  observaciones_logisticas TEXT
+  correo_enviado           TINYINT(1)
+  responsable_id           INT FK → usuarios.id
+  eliminado                TINYINT(1) DEFAULT 0
+
+────────────────────────────────────────────────
+TABLA: capsulas  (pendiente)
+────────────────────────────────────────────────
+Archivo referencia: capsulas.php (comentado al inicio)
+Propósito: Cápsulas educativas de ciberseguridad para funcionarios.
+
+Columnas planificadas:
+  id                INT PK AUTO_INCREMENT
+  titulo            VARCHAR(255)
+  resumen           TEXT
+  contenido         LONGTEXT
+  categoria         ENUM(phishing,smishing,vishing,malware,fraude,
+                         contrasenas,redes,identidad)
+  nivel             ENUM(basico,intermedio,avanzado)
+  icono             VARCHAR(100)
+  archivo_descarga  VARCHAR(255)
+  url_profundizar   VARCHAR(500)
+  activo            TINYINT(1) DEFAULT 1
+  destacado         TINYINT(1) DEFAULT 0
+  fecha_publicacion DATETIME DEFAULT CURRENT_TIMESTAMP
+  vistas            INT DEFAULT 0
+
+────────────────────────────────────────────────
+TABLA: quiz_preguntas  (pendiente)
+────────────────────────────────────────────────
+Archivo referencia: capsulas.php
+Propósito: Banco de preguntas para el quiz de ciberseguridad.
+
+Columnas planificadas:
+  id                INT PK AUTO_INCREMENT
+  pregunta          TEXT
+  opcion_a          VARCHAR(255)
+  opcion_b          VARCHAR(255)
+  opcion_c          VARCHAR(255)
+  opcion_d          VARCHAR(255)
+  respuesta_correcta ENUM(a,b,c,d)
+  explicacion       TEXT
+  categoria         VARCHAR(100)
+  activo            TINYINT(1) DEFAULT 1
+
+────────────────────────────────────────────────
+TABLA: quiz_resultados  (pendiente)
+────────────────────────────────────────────────
+Archivo referencia: capsulas.php
+Propósito: Registro de resultados de quizzes por sesión.
+
+Columnas planificadas:
+  id               INT PK AUTO_INCREMENT
+  sesion_id        VARCHAR(64)
+  puntaje          INT
+  total_preguntas  INT
+  fecha            DATETIME DEFAULT CURRENT_TIMESTAMP
+
+────────────────────────────────────────────────
+TABLA: seduc_funcionarios  (pendiente)
+────────────────────────────────────────────────
+Archivo referencia: seduc_informa.php
+Propósito: Directorio de funcionarios SEDUC — para cumpleaños y contactos internos.
+
+Columnas planificadas:
+  id               INT PK AUTO_INCREMENT
+  nombres          VARCHAR(120)
+  apellidos        VARCHAR(120)
+  fecha_nac        DATE
+  cargo            VARCHAR(150)
+  unidad           ENUM(seduc_central,colegio,equipos_tecnicos,
+                        consejo_direccion,paradocente,auxiliar)
+  email            VARCHAR(150)
+  foto             VARCHAR(255)
+  activo           TINYINT(1) DEFAULT 1
+  creado_en        DATETIME DEFAULT CURRENT_TIMESTAMP
+
+────────────────────────────────────────────────
+TABLA: seduc_calendario  (pendiente)
+────────────────────────────────────────────────
+Archivo referencia: seduc_informa.php
+Propósito: Calendario académico oficial cargado desde Excel (importación masiva).
+
+Columnas planificadas:
+  id           INT PK AUTO_INCREMENT
+  titulo       VARCHAR(300)
+  fecha_texto  VARCHAR(300) — texto original del Excel
+  fecha_inicio DATE
+  fecha_fin    DATE
+  tipo         ENUM(ingreso,vacaciones,feriado,jornada,fin_ano,otro)
+  estamento    VARCHAR(200)
+  anio         SMALLINT
+  activo       TINYINT(1) DEFAULT 1
+  actualizado  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+────────────────────────────────────────────────
+TABLA: seduc_carga_excel  (pendiente)
+────────────────────────────────────────────────
+Archivo referencia: seduc_informa.php
+Propósito: Log/auditoría de cargas de archivos Excel al sistema.
+
+Columnas planificadas:
+  id              INT PK AUTO_INCREMENT
+  usuario         VARCHAR(100)
+  archivo         VARCHAR(255)
+  filas_cargadas  INT
+  fecha           DATETIME DEFAULT CURRENT_TIMESTAMP
+
+--------------------------------------------------------------------------------
+5. MÓDULOS Y ESTADO ACTUAL
+--------------------------------------------------------------------------------
+
+MÓDULO              ARCHIVO              ESTADO         BD conectada
+─────────────────────────────────────────────────────────────────────
+Dashboard           index_1.php          Activo         SI (contenedor)
+Login               validar.php          Activo         SI (usuarios)
+Perfil              perfil.php           Activo         SI (usuarios)
+Liquidaciones       liquidaciones.php    Activo*        NO (datos PHP hardcod.)
+Documentos          documentos.php       Activo*        NO (datos PHP hardcod.)
+Beneficios          beneficio.php        Activo         SI (convenios)
+Admin Convenios     admin_convenios.php  Activo         SI (convenios)
+Contactos           contactos.php        UI lista       NO (pendiente tabla)
+Notas               notas.php            UI lista       NO (usa localStorage)
+Recursos            recursos.php         Activo         parcial
+Eventos             eventos.php          UI completa    NO (datos demo PHP)
+Seduc Informa       seduc_informa.php    UI completa    NO (datos estáticos)
+Informativo/Caps.   capsulas.php         UI completa    NO (datos estáticos)
+Apps                apps.php             Activo         SI (contenedor/apps)
+
+*) Liquidaciones y Documentos muestran datos reales hardcodeados en PHP
+   mientras se conecta la tabla correspondiente.
+
+--------------------------------------------------------------------------------
+6. MENÚ DE CABECERA — FUNCIONAMIENTO
+--------------------------------------------------------------------------------
+La función menus_cabezera($conn) en componentes/menu_cabecera.php
+hace SELECT a la tabla menu_h y devuelve array de [menu, href, orden].
+
+La función construirHrefMenuCabecera() usa directamente el campo "pagina"
+de la BD como href — sin mapeo hardcodeado. La BD es la fuente de verdad.
+
+Se agrega automáticamente "Recursos" (recursos.php) si no está en la BD.
+
+El dropdown de usuario (renderTopbarUserMenu()) muestra:
+  1. Perfil          → perfil.php
+  2. Liquidaciones   → liquidaciones.php
+  3. Documentos      → documentos.php
+  4. Cerrar sesión   → logout.php  (rojo, peligro)
+
+--------------------------------------------------------------------------------
+7. CONVENCIONES Y PATRONES DE CÓDIGO
+--------------------------------------------------------------------------------
+- Cada página PHP carga su CSS inline en <style> dentro del <head>
+- No hay framework CSS externo (no Bootstrap, no Tailwind). CSS propio.
+- Fuentes: "DM Sans" (cuerpo) y "Fraunces" (títulos) desde Google Fonts
+- Paleta principal: --primary #2f57b7 / --navy #1a2744 / --accent #f0a500
+- Todas las páginas siguen el mismo patrón de cabecera:
+    require_once __DIR__ . '/class/conexion.php';
+    require_once __DIR__ . '/componentes/menu_cabecera.php';
+    $db = new Conexion(); $conn = $db->getConexion();
+    $menusCabecera = menus_cabezera($conn);
+    $paginaActual  = basename($_SERVER['PHP_SELF'] ?? 'pagina.php');
+    $db->cerrar();
+  Luego en el HTML:
+    <header class="topbar"> ... menú dinámico + renderTopbarUserMenu() ... </header>
+- Imágenes de convenios/apps en carpeta /imagenes/
+- Sin ORM. Queries directas con MySQLi (prepared statements en validar.php,
+  strings interpoladas en el resto)
+
+--------------------------------------------------------------------------------
+8. MÓDULOS PRÓXIMOS A CONECTAR A BD
+--------------------------------------------------------------------------------
+Prioridad sugerida:
+  1. eventos.php        → crear tabla "eventos", reemplazar array demo
+  2. liquidaciones.php  → crear tabla "liquidaciones" con columnas del array PHP
+  3. documentos.php     → crear tabla "documentos" o acceso a directorio
+  4. capsulas.php       → crear tablas "capsulas" y "quiz_preguntas"
+  5. contactos.php      → crear tabla "contactos_equipo" o similar
+  6. notas.php          → migrar keep_widget de localStorage a BD
+  7. seduc_informa.php  → crear tablas "seduc_funcionarios" y "seduc_calendario"
+
+--------------------------------------------------------------------------------
+9. CREDENCIALES Y ENTORNOS
+--------------------------------------------------------------------------------
+LOCAL/QA:
+  Host BD:  localhost
+  BD:       qaseduc_panel
+  User:     qaseduc_ucomun
+  Pass:     jorquera86;
+
+PRODUCCIÓN (comentado en código):
+  Host BD:  172.28.0.2
+  BD:       qaseduc_panel
+  User:     root
+  Pass:     seduc2024
+
+URL QA activa: qa.seduc.cl/jorquera/sistema_panel_qa/
+
+================================================================================
+FIN DEL DOCUMENTO
+================================================================================
