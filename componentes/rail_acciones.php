@@ -706,8 +706,6 @@ function renderRailAcciones(bool $habilitarKeep = true): void
       </div>
     </div>
 
-    <script src="js/contenedor_modal.js"></script>
-
     <div class="calendar-modal-backdrop" data-calendar-backdrop></div>
     <div class="calendar-modal" data-calendar-modal>
       <div class="calendar-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="calendarModalTitle">

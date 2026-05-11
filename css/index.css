@@ -1,0 +1,262 @@
+/* =========================
+   TOKENS
+   ========================= */
+:root {
+  --primary: #2f57b7; --primary-700: #23449a;
+  --accent: #f5b338;  --accent-700: #e7a423;
+  --bg: #f6f8fe;
+  --surface: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e5eaf6;
+  --radius: 16px;
+  --shadow: 0 10px 30px rgba(15,23,42,.10);
+  --shadow-soft: 0 8px 20px rgba(15,23,42,.08);
+  --container: 1200px;
+}
+
+* { box-sizing: border-box }
+html, body { height: 100% }
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  color: var(--text);
+  background: var(--bg);
+}
+a { color: inherit; text-decoration: none }
+.container { width: min(var(--container), calc(100% - 36px)); margin-inline: auto }
+
+/* Buttons */
+.btn {
+  border: 1px solid transparent;
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: .15s ease;
+}
+.btn:active { transform: translateY(1px) }
+.btn--primary { background: var(--primary); color: #fff; box-shadow: var(--shadow-soft) }
+.btn--primary:hover { background: var(--primary-700) }
+.btn--ghost { background: transparent; border-color: var(--border); color: var(--text) }
+.btn--ghost:hover { background: #fff; box-shadow: var(--shadow-soft) }
+
+/* =========================
+   STAGE
+   ========================= */
+.stage {
+  position: relative;
+  height: calc(100vh - 74px);
+  padding: 0;
+  overflow: hidden;
+}
+
+.stage__bg {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.20), rgba(0,0,0,.20)),
+    url("https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1800&q=60");
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.02);
+  filter: saturate(1.05);
+}
+
+.stage__inner {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  padding-top: 12px;
+}
+
+/* =========================
+   SEARCHBAR
+   ========================= */
+.searchbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(229,234,246,.8);
+  box-shadow: var(--shadow);
+  margin-bottom: 18px;
+}
+.searchbar__icon {
+  width: 38px; height: 38px; border-radius: 14px;
+  display: grid; place-items: center;
+  background: #eef2ff; color: var(--primary);
+  font-weight: 900;
+}
+.searchbar__input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* =========================
+   TILES GRID
+   ========================= */
+.tiles {
+  display: grid;
+  overflow: hidden;
+  padding-right: 86px;
+  align-content: center;
+  justify-content: center;
+}
+
+.tile {
+  position: relative;
+  border-radius: 16px;
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.24);
+  box-shadow: 0 14px 35px rgba(0,0,0,.18);
+  overflow: visible;
+  backdrop-filter: blur(8px);
+  transition: .15s ease;
+}
+.tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 45px rgba(0,0,0,.22);
+}
+.tile__link {
+  position: absolute;
+  inset: 0;
+  display: block;
+  z-index: 1;
+}
+
+/* Los 3 puntos se ocultan por defecto y solo aparecen al pasar el cursor */
+.tile__actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 4;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s ease;
+}
+.tile:hover .tile__actions,
+.tile__actions.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.tile__menu-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(15,23,42,.56);
+  color: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 24px rgba(15,23,42,.22);
+  backdrop-filter: blur(8px);
+}
+.tile__menu-btn:hover { background: rgba(15,23,42,.72) }
+.tile__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 112px;
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.5);
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 18px 40px rgba(15,23,42,.22);
+  display: none;
+}
+.tile__actions.is-open .tile__menu {
+  display: grid;
+  gap: 6px;
+}
+.tile__menu-item {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  text-align: left;
+  background: transparent;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.tile__menu-item:hover { background: #eef2ff; color: #2f57b7 }
+.tile__menu-item--danger { color: #b91c1c }
+.tile__menu-item--danger:hover { background: #fff1f2; color: #b91c1c }
+
+.tile__media {
+  position: absolute; inset: 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.68);
+  border: 1px solid rgba(255,255,255,.55);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.tile__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* =========================
+   NEWSBAR
+   ========================= */
+.newsbar {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(900px, calc(100% - 32px));
+  z-index: 95;
+}
+.newsbar__inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 45px rgba(15,23,42,.18);
+  font-weight: 700;
+}
+.newsbar__icon {
+  width: 40px; height: 40px;
+  border-radius: 14px;
+  display: grid; place-items: center;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  font-size: 18px;
+}
+.newsbar__text { flex: 1; font-size: 14px; color: var(--text) }
+.newsbar__highlight { color: var(--primary); font-weight: 900 }
+.newsbar__close {
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--muted);
+  font-weight: 900;
+}
+.newsbar__close:hover { color: var(--text) }
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width: 820px) {
+  .tiles { padding-right: 0 }
+}
