@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SEDUC Chile — Panel Central</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ── Reset & tokens ─────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F4F5F7;
+  --card:#FFFFFF;
+  --sidebar:#252830;
+  --sidebar-fg:rgba(255,255,255,.87);
+  --sidebar-muted:rgba(255,255,255,.38);
+  --sidebar-accent:#2E3240;
+  --sidebar-active-border:#F4B000;
+  --blue:#005B96;
+  --blue-light:rgba(0,91,150,.1);
+  --blue-mid:rgba(0,91,150,.18);
+  --green:#3C8D2F;
+  --green-light:rgba(60,141,47,.1);
+  --yellow:#F4B000;
+  --yellow-light:rgba(244,176,0,.14);
+  --graphite:#3F424A;
+  --border:#E5E7EB;
+  --muted:#6B7280;
+  --fg:#3F424A;
+  --danger:#C0392B;
+  --danger-light:rgba(192,57,43,.1);
+  --success:#3C8D2F;
+  --success-light:rgba(60,141,47,.1);
+  --warning:#B8860B;
+  --warning-light:rgba(244,176,0,.15);
+  --radius:8px;
+  --shadow-card:0 1px 2px rgba(0,0,0,.04),0 1px 4px rgba(0,0,0,.06);
+  --shadow-elevated:0 8px 24px -8px rgba(30,40,70,.18);
+  --sidebar-w:260px;
+  --topbar-h:64px;
+  --transition:200ms ease;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+html,body{height:100%;}
+#app{display:flex;min-height:100%;}
+button{cursor:pointer;font-family:inherit;}
+input,select{font-family:inherit;}
+svg{display:block;flex-shrink:0;}
+
+/* ── Layout ─────────────────────────────────────────────────────── */
+#sidebar{position:fixed;inset-y:0;left:0;z-index:30;display:flex;flex-direction:column;background:var(--sidebar);color:var(--sidebar-fg);width:var(--sidebar-w);transition:width var(--transition),transform var(--transition);border-right:1px solid rgba(255,255,255,.06);height:100%;min-height:100vh;}
+#sidebar.collapsed{width:72px;}
+#main{flex:1;margin-left:var(--sidebar-w);transition:margin-left var(--transition);display:flex;flex-direction:column;min-height:100vh;}
+#sidebar.collapsed ~ #main{margin-left:72px;}
+/* Mobile: sidebar overlays, doesn't push */
+@media(max-width:768px){
+  #sidebar{transform:translateX(-100%);width:var(--sidebar-w) !important;}
+  #sidebar.mobile-open{transform:translateX(0);}
+  #main{margin-left:0 !important;}
+  #mobile-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:29;}
+  #sidebar.mobile-open ~ #mobile-overlay{display:block;}
+  #mobile-menu-btn{display:flex !important;}
+  #content{padding:16px;}
+  .chart-grid,.bottom-grid{grid-template-columns:1fr !important;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .colegios-grid{grid-template-columns:1fr !important;}
+  .quick-grid{grid-template-columns:repeat(2,1fr);}
+  .cal-grid{grid-template-columns:1fr !important;}
+  .permisos-grid{grid-template-columns:1fr !important;}
+}
+#topbar{position:sticky;top:0;z-index:20;height:var(--topbar-h);display:flex;align-items:center;gap:16px;padding:0 24px;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);}
+#content{flex:1;padding:28px 28px;overflow-x:hidden;}
+.page{display:none;animation:fadeIn .18s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── Sidebar internals ──────────────────────────────────────────── */
+.sidebar-logo{display:flex;align-items:center;gap:12px;padding:0 16px;height:var(--topbar-h);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;}
+.logo-icon{width:36px;height:36px;border-radius:8px;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-text{display:flex;flex-direction:column;line-height:1.3;overflow:hidden;transition:opacity var(--transition),width var(--transition);}
+.logo-text strong{font-size:13px;font-weight:600;white-space:nowrap;}
+.logo-text span{font-size:10px;color:var(--sidebar-muted);white-space:nowrap;}
+#sidebar.collapsed .logo-text{opacity:0;width:0;}
+.sidebar-nav{flex:1;overflow-y:auto;padding:16px 8px;}
+.sidebar-nav::-webkit-scrollbar{width:4px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px;}
+.nav-group-label{padding:4px 12px 6px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--sidebar-muted);white-space:nowrap;overflow:hidden;transition:opacity var(--transition);}
+#sidebar.collapsed .nav-group-label{opacity:0;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:7px;font-size:13px;color:var(--sidebar-fg);transition:background var(--transition),color var(--transition);cursor:pointer;white-space:nowrap;position:relative;border:none;background:none;width:100%;}
+.nav-item:hover{background:var(--sidebar-accent);}
+.nav-item.active{background:var(--sidebar-accent);border-left:2px solid var(--sidebar-active-border);padding-left:10px;}
+.nav-item svg{flex-shrink:0;}
+.nav-item span{overflow:hidden;transition:opacity var(--transition),width var(--transition);}
+#sidebar.collapsed .nav-item span{opacity:0;width:0;}
+#sidebar.collapsed .nav-item{justify-content:center;padding:9px 0;}
+.sidebar-footer{padding:8px;border-top:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:2px;}
+.sidebar-footer .nav-item{font-size:13px;}
+.collapse-btn{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:7px;font-size:13px;color:var(--sidebar-muted);background:none;border:none;width:100%;cursor:pointer;transition:background var(--transition);}
+.collapse-btn:hover{background:var(--sidebar-accent);color:var(--sidebar-fg);}
+.collapse-btn svg{transition:transform var(--transition);}
+#sidebar.collapsed .collapse-btn svg{transform:rotate(180deg);}
+#sidebar.collapsed .collapse-btn{justify-content:center;padding:9px 0;}
+#sidebar.collapsed .collapse-btn span{opacity:0;width:0;overflow:hidden;}
+
+/* ── Topbar internals ───────────────────────────────────────────── */
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);}
+.breadcrumb .sep{opacity:.4;}
+.breadcrumb .current{color:var(--fg);font-weight:500;}
+.search-wrap{margin-left:24px;flex:1;max-width:380px;position:relative;}
+.search-wrap input{width:100%;padding:7px 12px 7px 36px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);font-size:13px;color:var(--fg);outline:none;transition:border-color var(--transition),box-shadow var(--transition);}
+.search-wrap input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-light);}
+.search-wrap .icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.notif-btn{position:relative;width:36px;height:36px;border-radius:var(--radius);border:none;background:none;display:flex;align-items:center;justify-content:center;color:var(--fg);transition:background var(--transition);}
+.notif-btn:hover{background:var(--bg);}
+.notif-badge{position:absolute;top:-2px;right:-2px;height:16px;min-width:16px;padding:0 4px;background:var(--yellow);color:#222;border-radius:99px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.user-chip{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:var(--radius);border:none;background:none;cursor:pointer;transition:background var(--transition);}
+.user-chip:hover{background:var(--bg);}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.user-info{display:flex;flex-direction:column;align-items:flex-start;line-height:1.3;}
+.user-info strong{font-size:13px;font-weight:500;}
+.user-info span{font-size:10px;color:var(--muted);}
+
+/* ── Cards ──────────────────────────────────────────────────────── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-card);}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:14px;font-weight:600;}
+.card-desc{font-size:12px;color:var(--muted);margin-top:2px;}
+.card-body{padding:20px;}
+.card-body-flush{padding:0;}
+
+/* ── Buttons ────────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);border:none;font-size:13px;font-weight:500;cursor:pointer;transition:background var(--transition),box-shadow var(--transition),opacity var(--transition);}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-primary:hover{background:#004d80;}
+.btn-outline{background:var(--card);color:var(--fg);border:1px solid var(--border);}
+.btn-outline:hover{background:var(--bg);}
+.btn-ghost{background:none;color:var(--fg);border:none;}
+.btn-ghost:hover{background:var(--bg);}
+.btn-sm{padding:5px 10px;font-size:12px;}
+.btn-icon{padding:6px;border-radius:var(--radius);background:none;border:none;color:var(--muted);transition:background var(--transition),color var(--transition);}
+.btn-icon:hover{background:var(--bg);color:var(--fg);}
+.btn-danger-ghost{background:none;border:none;color:var(--danger);padding:6px;border-radius:var(--radius);transition:background var(--transition);}
+.btn-danger-ghost:hover{background:var(--danger-light);}
+
+/* ── Badges ─────────────────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:500;border:1px solid transparent;text-transform:capitalize;}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.badge-active,.badge-confirmado{background:var(--success-light);color:var(--success);border-color:rgba(60,141,47,.2);}
+.badge-inactivo{background:#F3F4F6;color:var(--muted);border-color:var(--border);}
+.badge-bloqueado,.badge-cancelado{background:var(--danger-light);color:var(--danger);border-color:rgba(192,57,43,.2);}
+.badge-pendiente{background:var(--warning-light);color:var(--warning);border-color:rgba(244,176,0,.3);}
+.badge-realizado{background:var(--blue-light);color:var(--blue);border-color:var(--blue-mid);}
+
+/* ── Tables ─────────────────────────────────────────────────────── */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead{background:#FAFAFA;}
+th{padding:10px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:12px 16px;border-bottom:1px solid #F3F4F6;font-size:13px;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#FAFBFC;}
+.mono{font-family:'DM Mono',monospace;font-size:12px;}
+
+/* ── Form elements ──────────────────────────────────────────────── */
+.input{padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;color:var(--fg);background:var(--card);outline:none;width:100%;transition:border-color var(--transition),box-shadow var(--transition);}
+.input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-light);}
+.input-icon-wrap{position:relative;}
+.input-icon-wrap .icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);}
+.input-icon-wrap input{padding-left:36px;}
+label.field-label{font-size:12px;font-weight:500;color:var(--fg);display:block;margin-bottom:6px;}
+select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:32px;}
+
+/* ── Toggle switch ──────────────────────────────────────────────── */
+.switch{position:relative;display:inline-flex;align-items:center;width:36px;height:20px;cursor:pointer;}
+.switch input{opacity:0;width:0;height:0;position:absolute;}
+.switch-track{width:36px;height:20px;background:#D1D5DB;border-radius:99px;transition:background .15s;}
+.switch input:checked + .switch-track{background:var(--blue);}
+.switch-thumb{position:absolute;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .15s;}
+.switch input:checked ~ .switch-thumb{transform:translateX(16px);}
+
+/* ── Stat cards ─────────────────────────────────────────────────── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-card);padding:20px;}
+.stat-card .row{display:flex;align-items:flex-start;justify-content:space-between;}
+.stat-card .label{font-size:13px;color:var(--muted);}
+.stat-card .value{margin-top:8px;font-size:28px;font-weight:700;letter-spacing:-.5px;}
+.stat-card .delta{margin-top:6px;font-size:11px;font-weight:500;}
+.delta-up{color:var(--success);}
+.delta-down{color:var(--danger);}
+.stat-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.icon-blue{background:var(--blue-light);color:var(--blue);}
+.icon-green{background:var(--green-light);color:var(--green);}
+.icon-yellow{background:var(--yellow-light);color:#B8860B;}
+.icon-graphite{background:rgba(63,66,74,.1);color:var(--graphite);}
+
+/* ── Chart grid ─────────────────────────────────────────────────── */
+.chart-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;}
+@media(max-width:900px){.chart-grid{grid-template-columns:1fr;}}
+
+/* ── Quick access ───────────────────────────────────────────────── */
+.quick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;}
+.quick-card{border:1px solid var(--border);border-radius:var(--radius);background:var(--card);padding:16px;cursor:pointer;transition:border-color var(--transition),box-shadow var(--transition);}
+.quick-card:hover{border-color:var(--blue);box-shadow:var(--shadow-elevated);}
+.quick-card .top{display:flex;align-items:center;justify-content:space-between;}
+.quick-card p{margin-top:12px;font-size:13px;font-weight:500;}
+.quick-card small{font-size:11px;color:var(--muted);}
+
+/* ── Activity + events ──────────────────────────────────────────── */
+.bottom-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;}
+@media(max-width:900px){.bottom-grid{grid-template-columns:1fr;}}
+.event-item{display:flex;gap:12px;padding:10px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;transition:background var(--transition);}
+.event-item:last-child{margin-bottom:0;}
+.event-item:hover{background:var(--bg);}
+.event-day{width:44px;height:44px;border-radius:8px;background:var(--blue-light);color:var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;line-height:1.2;}
+.event-day .mon{font-size:10px;font-weight:500;text-transform:uppercase;}
+.event-day .num{font-size:18px;font-weight:700;}
+.event-info{flex:1;min-width:0;}
+.event-info p{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.event-info small{font-size:11px;color:var(--muted);}
+
+/* ── Colegios grid ──────────────────────────────────────────────── */
+.colegios-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.colegio-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-card);padding:20px;transition:box-shadow var(--transition);}
+.colegio-card:hover{box-shadow:var(--shadow-elevated);}
+.colegio-card .header{display:flex;align-items:flex-start;justify-content:space-between;}
+.colegio-avatar{width:48px;height:48px;border-radius:10px;background:var(--blue-light);color:var(--blue);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.colegio-name{flex:1;min-width:0;margin-left:12px;}
+.colegio-name h3{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.colegio-name small{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;}
+.colegio-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+.colegio-stat{text-align:center;}
+.colegio-stat svg{margin:0 auto;color:var(--muted);}
+.colegio-stat .val{font-size:16px;font-weight:700;margin-top:2px;}
+.colegio-stat .lbl{font-size:10px;color:var(--muted);}
+
+/* ── Calendar ───────────────────────────────────────────────────── */
+.cal-grid{display:grid;grid-template-columns:7fr 3fr;gap:16px;align-items:start;}
+@media(max-width:900px){.cal-grid{grid-template-columns:1fr;}}
+.calendar-wrap{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.cal-days-header{display:grid;grid-template-columns:repeat(7,1fr);}
+.cal-day-header{background:#F9FAFB;padding:8px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);}
+.cal-body{display:grid;grid-template-columns:repeat(7,1fr);}
+.cal-cell{min-height:80px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px;display:flex;flex-direction:column;gap:2px;background:var(--card);}
+.cal-cell:hover{background:#FAFBFC;}
+.cal-cell.today{outline:2px solid var(--blue);outline-offset:-2px;}
+.cal-cell.empty{background:#FAFAFA;}
+.cal-num{font-size:11px;font-weight:500;color:var(--muted);align-self:flex-end;}
+.cal-ev{font-size:9px;padding:2px 5px;border-radius:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cal-ev-confirmado{background:var(--success-light);color:var(--success);}
+.cal-ev-pendiente{background:var(--warning-light);color:var(--warning);}
+.cal-ev-realizado{background:var(--blue-light);color:var(--blue);}
+.cal-ev-cancelado{background:var(--danger-light);color:var(--danger);text-decoration:line-through;}
+
+/* ── Permisos ───────────────────────────────────────────────────── */
+.permisos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.perm-item{padding:12px;border:1px solid var(--border);border-radius:var(--radius);}
+.perm-item-name{font-size:13px;font-weight:500;margin-bottom:10px;}
+.perm-checks{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.perm-check{display:flex;align-items:center;justify-content:space-between;background:#F9FAFB;border-radius:6px;padding:7px 10px;font-size:11px;color:var(--muted);}
+
+/* ── Modulos / Usuarios toolbar ──────────────────────────────────── */
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);}
+.toolbar-count{font-size:12px;color:var(--muted);white-space:nowrap;}
+
+/* ── Login page ─────────────────────────────────────────────────── */
+#page-login{display:none;}
+#page-login.active{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;position:fixed;inset:0;z-index:100;background:var(--bg);}
+@media(max-width:768px){#page-login.active{grid-template-columns:1fr;}}
+.login-brand{position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:48px;color:#fff;overflow:hidden;background:var(--graphite);}
+.login-brand-bg{position:absolute;inset:0;background:linear-gradient(135deg,#252830 0%,#2d3a5e 55%,#1a2a4a 100%);opacity:.95;}
+.login-brand-dot{position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.06) 1px,transparent 0);background-size:24px 24px;}
+.login-brand>*{position:relative;z-index:1;}
+.login-brand .logo{display:flex;align-items:center;gap:12px;}
+.login-brand .logo-icon{width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;}
+.login-brand .logo-text strong{font-size:15px;font-weight:600;display:block;}
+.login-brand .logo-text span{font-size:11px;opacity:.5;}
+.login-brand .tagline{max-width:380px;}
+.login-brand .line{width:48px;height:3px;background:var(--yellow);border-radius:99px;margin-bottom:24px;}
+.login-brand h1{font-size:36px;font-weight:700;line-height:1.2;letter-spacing:-.5px;}
+.login-brand p{margin-top:16px;opacity:.65;font-size:15px;line-height:1.6;}
+.login-brand .quote{font-style:italic;color:var(--yellow);font-size:18px;font-weight:500;margin-top:40px;}
+.login-brand footer{font-size:11px;opacity:.4;}
+.login-form-wrap{display:flex;align-items:center;justify-content:center;padding:40px;background:var(--bg);}
+.login-box{width:100%;max-width:420px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:36px;box-shadow:var(--shadow-elevated);}
+.login-box h2{font-size:22px;font-weight:700;}
+.login-box .sub{font-size:13px;color:var(--muted);margin-top:4px;}
+.login-box .form-group{margin-top:20px;}
+.form-group-row{display:flex;align-items:center;justify-content:space-between;}
+.form-group-row a{font-size:12px;color:var(--blue);}
+.form-group-row a:hover{text-decoration:underline;}
+.login-check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-top:16px;cursor:pointer;}
+.login-check input{width:15px;height:15px;accent-color:var(--blue);}
+.login-submit{margin-top:20px;width:100%;padding:11px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;transition:background var(--transition);}
+.login-submit:hover{background:#004d80;}
+.login-demo{display:block;text-align:center;margin-top:16px;font-size:12px;color:var(--muted);cursor:pointer;}
+.login-demo:hover{color:var(--fg);}
+.login-footer{margin-top:24px;text-align:center;font-size:11px;color:var(--muted);}
+
+/* ── Page header ────────────────────────────────────────────────── */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px;}
+.page-header h1{font-size:22px;font-weight:700;letter-spacing:-.3px;}
+.page-header p{font-size:13px;color:var(--muted);margin-top:2px;}
+.page-header-actions{display:flex;gap:8px;align-items:center;}
+
+/* ── Section spacing ────────────────────────────────────────────── */
+.space-y-4>*+*{margin-top:16px;}
+.space-y-6>*+*{margin-top:24px;}
+.flex{display:flex;}
+.items-center{align-items:center;}
+.gap-2{gap:8px;}
+.gap-3{gap:12px;}
+.ml-auto{margin-left:auto;}
+.mt-3{margin-top:12px;}
+.mt-1{margin-top:4px;}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.text-muted{color:var(--muted);}
+.text-sm{font-size:13px;}
+.text-xs{font-size:11px;}
+.font-medium{font-weight:500;}
+.font-semibold{font-weight:600;}
+
+/* ── Dropdown menu ──────────────────────────────────────────────── */
+.dropdown{position:relative;display:inline-block;}
+.dropdown-menu{position:absolute;right:0;top:calc(100% + 6px);background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 8px 24px -4px rgba(0,0,0,.12);min-width:160px;z-index:50;display:none;padding:4px;}
+.dropdown-menu.open{display:block;}
+.dropdown-item{display:block;width:100%;padding:7px 12px;font-size:13px;background:none;border:none;text-align:left;border-radius:5px;cursor:pointer;color:var(--fg);transition:background var(--transition);}
+.dropdown-item:hover{background:var(--bg);}
+.dropdown-item.danger{color:var(--danger);}
+
+/* ── Modal/Dialog ───────────────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;animation:fadeIn .15s ease;}
+.modal{background:var(--card);border-radius:12px;width:100%;max-width:480px;margin:16px;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-header{padding:20px 24px 0;}
+.modal-header h3{font-size:16px;font-weight:700;}
+.modal-header p{font-size:12px;color:var(--muted);margin-top:4px;}
+.modal-body{padding:20px 24px;}
+.modal-footer{padding:0 24px 20px;display:flex;justify-content:flex-end;gap:8px;}
+
+/* ── User avatar mini ────────────────────────────────────────────── */
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tipo-badge{display:inline-block;padding:2px 8px;border-radius:5px;background:#F3F4F6;font-size:11px;font-weight:500;color:var(--fg);}
+
+/* ── Scrollbar global ─────────────────────────────────────────────── */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:99px;}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN ═══════════════ -->
+<div id="page-login" class="active">
+  <div class="login-brand">
+    <div class="login-brand-bg"></div>
+    <div class="login-brand-dot"></div>
+    <div class="logo">
+      <div class="logo-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      </div>
+      <div class="logo-text"><strong>SEDUC Chile</strong><span>Servicio de Educación</span></div>
+    </div>
+    <div class="tagline">
+      <div class="line"></div>
+      <h1>Sistema Panel Central</h1>
+      <p>Plataforma institucional para la gestión administrativa, académica y operacional de los establecimientos educacionales bajo dependencia SEDUC.</p>
+      <p class="quote">"Educar para servir."</p>
+    </div>
+    <footer>© 2026 Servicio Local de Educación Pública</footer>
+  </div>
+  <div class="login-form-wrap">
+    <div class="login-box">
+      <h2>Iniciar sesión</h2>
+      <p class="sub">Acceso restringido a personal autorizado.</p>
+      <div class="form-group">
+        <label class="field-label">Usuario o correo institucional</label>
+        <input class="input" id="login-user" value="msoto@seduc.cl" placeholder="usuario@seduc.cl"/>
+      </div>
+      <div class="form-group">
+        <div class="form-group-row">
+          <label class="field-label" style="margin:0">Contraseña</label>
+          <a href="#">¿Olvidaste tu clave?</a>
+        </div>
+        <input class="input" id="login-pwd" type="password" value="demo1234" placeholder="••••••••" style="margin-top:6px"/>
+      </div>
+      <label class="login-check"><input type="checkbox" checked/> Mantener sesión iniciada</label>
+      <button class="login-submit" onclick="enterApp()">Ingresar al panel</button>
+      <a class="login-demo" onclick="enterApp()">Acceder en modo demostración →</a>
+      <p class="login-footer">Al continuar aceptas los términos de uso y la política de privacidad institucional.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ APP SHELL ═══════════════ -->
+<div id="app" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      </div>
+      <div class="logo-text">
+        <strong>SEDUC Chile</strong>
+        <span>Panel Central</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <button class="nav-item" onclick="alert('Configuración — próximamente')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        <span>Configuración</span>
+      </button>
+      <button class="nav-item" onclick="exitApp()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Cerrar sesión</span>
+      </button>
+      <button class="collapse-btn" id="collapse-btn" onclick="toggleSidebar()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        <span>Colapsar</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div id="mobile-overlay" onclick="closeMobileSidebar()"></div>
+    <header id="topbar">
+      <button id="mobile-menu-btn" onclick="toggleMobileSidebar()" style="display:none;align-items:center;justify-content:center;width:36px;height:36px;border:none;background:none;border-radius:var(--radius);color:var(--fg);flex-shrink:0;cursor:pointer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="breadcrumb">
+        <span>SEDUC</span>
+        <span class="sep">›</span>
+        <span class="current" id="breadcrumb-current">Dashboard</span>
+      </div>
+      <div class="search-wrap">
+        <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Buscar usuarios, colegios, módulos..."/>
+      </div>
+      <div class="topbar-right">
+        <button class="notif-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-badge">3</span>
+        </button>
+        <button class="user-chip">
+          <div class="avatar">MS</div>
+          <div class="user-info">
+            <strong>María Soto</strong>
+            <span>Administrador</span>
+          </div>
+        </button>
+      </div>
+    </header>
+
+    <div id="content">
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div><h1>Resumen general</h1><p>Vista consolidada del Sistema Panel Central — SEDUC Chile.</p></div>
+          <div class="page-header-actions">
+            <button class="btn btn-outline"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Exportar reporte</button>
+            <button class="btn btn-primary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nuevo registro</button>
+          </div>
+        </div>
+        <!-- Stats -->
+        <div class="stat-grid">
+          <div class="stat-card"><div class="row"><div><div class="label">Usuarios activos</div><div class="value">1.284</div><div class="delta delta-up">+4,2% vs mes anterior</div></div><div class="stat-icon icon-blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div></div></div>
+          <div class="stat-card"><div class="row"><div><div class="label">Colegios registrados</div><div class="value">312</div><div class="delta delta-up">+1,8% vs mes anterior</div></div><div class="stat-icon icon-green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div></div></div>
+          <div class="stat-card"><div class="row"><div><div class="label">Eventos del mes</div><div class="value">47</div><div class="delta delta-up">+12 vs mes anterior</div></div><div class="stat-icon icon-yellow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div></div></div>
+          <div class="stat-card"><div class="row"><div><div class="label">Tickets abiertos</div><div class="value">8</div><div class="delta delta-down">-3 vs mes anterior</div></div><div class="stat-icon icon-graphite"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div></div></div>
+        </div>
+        <!-- Charts -->
+        <div class="chart-grid mt-3">
+          <div class="card">
+            <div class="card-header"><div><div class="card-title">Crecimiento de usuarios</div><div class="card-desc">Últimos 6 meses</div></div><span class="text-xs text-muted">Datos demostrativos</span></div>
+            <div class="card-body" style="height:260px"><canvas id="chart-usuarios"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Eventos por mes</div><div class="card-desc">Calendario institucional</div></div>
+            <div class="card-body" style="height:260px"><canvas id="chart-eventos"></canvas></div>
+          </div>
+        </div>
+        <!-- Quick access -->
+        <div class="quick-grid mt-3">
+          <div class="quick-card" onclick="navigate('usuarios')"><div class="top"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div><p>Gestionar usuarios</p><small>Acceso rápido</small></div>
+          <div class="quick-card" onclick="navigate('colegios')"><div class="top"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div><p>Ver colegios</p><small>Acceso rápido</small></div>
+          <div class="quick-card" onclick="navigate('eventos')"><div class="top"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div><p>Crear evento</p><small>Acceso rápido</small></div>
+          <div class="quick-card" onclick="navigate('permisos')"><div class="top"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--graphite)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div><p>Permisos</p><small>Acceso rápido</small></div>
+        </div>
+        <!-- Activity + Events -->
+        <div class="bottom-grid mt-3">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Actividad reciente</div><div class="card-desc">Últimas acciones del sistema</div></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Usuario</th><th>Acción</th><th style="text-align:right">Cuándo</th></tr></thead>
+                <tbody id="activity-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Próximos eventos</div><div class="card-desc">Avisos institucionales</div></div>
+            <div class="card-body" id="upcoming-events"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODULOS -->
+      <div class="page" id="page-modulos">
+        <div class="page-header">
+          <div><h1>Gestión de módulos</h1><p>Habilita o deshabilita módulos del sistema institucional.</p></div>
+          <button class="btn btn-primary" onclick="openModal('modal-modulo')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Agregar módulo</button>
+        </div>
+        <div class="card">
+          <div class="toolbar">
+            <div class="input-icon-wrap" style="max-width:320px;flex:1">
+              <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="text" class="input" id="modulos-search" placeholder="Buscar módulo..." oninput="filterModulos()"/>
+            </div>
+            <span class="toolbar-count" id="modulos-count"></span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Nombre</th><th>Identificador</th><th>Estado</th><th>Actualizado</th><th style="text-align:right">Acciones</th></tr></thead>
+              <tbody id="modulos-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- USUARIOS -->
+      <div class="page" id="page-usuarios">
+        <div class="page-header">
+          <div><h1>Gestión de usuarios</h1><p>Administra accesos, perfiles y colegios asociados.</p></div>
+          <button class="btn btn-primary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nuevo usuario</button>
+        </div>
+        <div class="card">
+          <div class="toolbar">
+            <div class="input-icon-wrap" style="max-width:320px;flex:1">
+              <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="text" class="input" id="usuarios-search" placeholder="Buscar por nombre, correo o colegio..." oninput="filterUsuarios()"/>
+            </div>
+            <span class="toolbar-count" id="usuarios-count"></span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Usuario</th><th>RUT</th><th>Tipo</th><th>Colegio asociado</th><th>Estado</th><th style="text-align:right">Acciones</th></tr></thead>
+              <tbody id="usuarios-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLEGIOS -->
+      <div class="page" id="page-colegios">
+        <div class="page-header">
+          <div><h1>Colegios</h1><p>Establecimientos educacionales bajo dependencia SEDUC.</p></div>
+          <button class="btn btn-primary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Registrar colegio</button>
+        </div>
+        <div class="colegios-grid" id="colegios-grid"></div>
+      </div>
+
+      <!-- EVENTOS -->
+      <div class="page" id="page-eventos">
+        <div class="page-header">
+          <div><h1>Eventos y calendario</h1><p>Agenda institucional SEDUC.</p></div>
+          <button class="btn btn-primary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nuevo evento</button>
+        </div>
+        <div class="cal-grid">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Mayo 2026</div>
+              <div class="flex gap-2">
+                <button class="btn btn-outline btn-sm">‹</button>
+                <button class="btn btn-outline btn-sm">›</button>
+              </div>
+            </div>
+            <div class="card-body" style="padding:16px">
+              <div class="calendar-wrap">
+                <div class="cal-days-header" id="cal-days-header"></div>
+                <div class="cal-body" id="cal-body"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Lista de eventos</div></div>
+            <div class="card-body" id="eventos-list" style="padding:16px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERMISOS -->
+      <div class="page" id="page-permisos">
+        <div class="page-header">
+          <div><h1>Sistema de permisos</h1><p>Configura accesos por menú y submenú según el perfil.</p></div>
+          <div class="page-header-actions">
+            <select class="input" style="width:220px">
+              <option>Perfil: Administrador</option>
+              <option>Perfil: Coordinador</option>
+              <option>Perfil: Docente</option>
+              <option>Perfil: Soporte TI</option>
+            </select>
+            <button class="btn btn-primary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar cambios</button>
+          </div>
+        </div>
+        <div class="permisos-grid" id="permisos-grid"></div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ═══ MODAL: Nuevo módulo ═══ -->
+<div class="modal-overlay" id="modal-modulo" onclick="closeModalOutside(event,'modal-modulo')">
+  <div class="modal">
+    <div class="modal-header"><h3>Nuevo módulo</h3><p>Define los datos del módulo que se integrará al panel central.</p></div>
+    <div class="modal-body">
+      <div style="margin-bottom:16px"><label class="field-label">Nombre del módulo</label><input class="input" placeholder="Ej: Gestión académica"/></div>
+      <div style="margin-bottom:16px"><label class="field-label">Identificador</label><input class="input" placeholder="academico"/></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px">
+        <div><p style="font-size:13px;font-weight:500">Activo al crear</p><p style="font-size:11px;color:var(--muted)">Disponible inmediatamente en el menú principal.</p></div>
+        <label class="switch"><input type="checkbox" checked/><div class="switch-track"></div><div class="switch-thumb"></div></label>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('modal-modulo')">Cancelar</button><button class="btn btn-primary">Guardar módulo</button></div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: Permisos usuario ═══ -->
+<div class="modal-overlay" id="modal-permisos-user" onclick="closeModalOutside(event,'modal-permisos-user')">
+  <div class="modal">
+    <div class="modal-header"><h3 id="modal-permisos-nombre">Permisos de usuario</h3><p>Activa los menús a los que tendrá acceso.</p></div>
+    <div class="modal-body" id="modal-permisos-body"></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('modal-permisos-user')">Cancelar</button><button class="btn btn-primary">Guardar permisos</button></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   DATA
+══════════════════════════════════════════════════ */
+const stats = [
+  {label:"Usuarios activos",value:"1.284",delta:"+4,2%",color:"blue",icon:"users"},
+  {label:"Colegios registrados",value:"312",delta:"+1,8%",color:"green",icon:"school"},
+  {label:"Eventos del mes",value:"47",delta:"+12",color:"yellow",icon:"calendar"},
+  {label:"Tickets abiertos",value:"8",delta:"-3",color:"graphite",icon:"ticket"},
+];
+const modulos = [
+  {id:1,nombre:"Gestión Académica",slug:"academico",estado:"activo",actualizado:"12-05-2026"},
+  {id:2,nombre:"Recursos Humanos",slug:"rrhh",estado:"activo",actualizado:"10-05-2026"},
+  {id:3,nombre:"Finanzas y Presupuesto",slug:"finanzas",estado:"activo",actualizado:"08-05-2026"},
+  {id:4,nombre:"Convivencia Escolar",slug:"convivencia",estado:"inactivo",actualizado:"01-04-2026"},
+  {id:5,nombre:"Bienestar Estudiantil",slug:"bienestar",estado:"activo",actualizado:"05-05-2026"},
+  {id:6,nombre:"Reportes Ministeriales",slug:"reportes-mineduc",estado:"activo",actualizado:"11-05-2026"},
+];
+const usuarios = [
+  {id:1,nombre:"María Fernanda Soto",rut:"12.345.678-9",correo:"msoto@seduc.cl",tipo:"Administrador",colegio:"DEPROV Central",estado:"activo"},
+  {id:2,nombre:"Carlos Pérez Muñoz",rut:"10.987.654-3",correo:"cperez@seduc.cl",tipo:"Coordinador",colegio:"Liceo Bicentenario",estado:"activo"},
+  {id:3,nombre:"Javiera Riquelme",rut:"15.432.187-K",correo:"jriquelme@seduc.cl",tipo:"Docente",colegio:"Escuela San Andrés",estado:"bloqueado"},
+  {id:4,nombre:"Pedro Vargas Cea",rut:"9.876.543-2",correo:"pvargas@seduc.cl",tipo:"Inspector",colegio:"Liceo Industrial",estado:"activo"},
+  {id:5,nombre:"Ana Bustamante",rut:"13.222.111-0",correo:"abustamante@seduc.cl",tipo:"Soporte TI",colegio:"DEPROV Norte",estado:"activo"},
+];
+const colegios = [
+  {id:1,nombre:"Liceo Bicentenario Santiago",rbd:"10245-1",comuna:"Santiago",usuarios:84,modulos:6,eventos:12,estado:"activo"},
+  {id:2,nombre:"Escuela San Andrés",rbd:"20188-3",comuna:"Maipú",usuarios:42,modulos:4,eventos:5,estado:"activo"},
+  {id:3,nombre:"Liceo Industrial de Concepción",rbd:"31204-0",comuna:"Concepción",usuarios:128,modulos:6,eventos:9,estado:"activo"},
+  {id:4,nombre:"Escuela Rural Los Aromos",rbd:"40887-2",comuna:"Curacaví",usuarios:18,modulos:3,eventos:2,estado:"inactivo"},
+  {id:5,nombre:"Colegio Polivalente Valparaíso",rbd:"50921-7",comuna:"Valparaíso",usuarios:96,modulos:5,eventos:7,estado:"activo"},
+  {id:6,nombre:"Liceo Técnico La Serena",rbd:"60554-4",comuna:"La Serena",usuarios:71,modulos:5,eventos:4,estado:"activo"},
+];
+const eventos = [
+  {id:1,titulo:"Consejo de Directores Regionales",fecha:"15-05-2026",hora:"10:00",lugar:"DEPROV Central",estado:"confirmado"},
+  {id:2,titulo:"Capacitación Plataforma SIGE",fecha:"18-05-2026",hora:"15:30",lugar:"Sala B-2",estado:"pendiente"},
+  {id:3,titulo:"Cierre de período académico",fecha:"22-05-2026",hora:"09:00",lugar:"Online",estado:"pendiente"},
+  {id:4,titulo:"Auditoría interna de finanzas",fecha:"08-05-2026",hora:"11:00",lugar:"Oficina central",estado:"realizado"},
+  {id:5,titulo:"Visita inspectiva Liceo Industrial",fecha:"02-05-2026",hora:"08:30",lugar:"Concepción",estado:"cancelado"},
+];
+const actividad = [
+  {user:"M. Soto",action:"creó el módulo",target:"Bienestar Estudiantil",time:"hace 5 min"},
+  {user:"C. Pérez",action:"actualizó el colegio",target:"Liceo Bicentenario",time:"hace 22 min"},
+  {user:"Sistema",action:"respaldo automático completado",target:"qaseduc_panel",time:"hace 1 h"},
+  {user:"P. Vargas",action:"asignó permisos a",target:"J. Riquelme",time:"hace 2 h"},
+  {user:"A. Bustamante",action:"cerró el ticket",target:"#1284 — Acceso SIGE",time:"hace 3 h"},
+];
+const chartData = [
+  {mes:"Dic",usuarios:980,eventos:28},{mes:"Ene",usuarios:1040,eventos:32},
+  {mes:"Feb",usuarios:1080,eventos:30},{mes:"Mar",usuarios:1150,eventos:41},
+  {mes:"Abr",usuarios:1220,eventos:39},{mes:"May",usuarios:1284,eventos:47},
+];
+const permisosMenus = [
+  {grupo:"Administración",items:[
+    {nombre:"Dashboard",ver:true,crear:false,editar:false,eliminar:false},
+    {nombre:"Usuarios",ver:true,crear:true,editar:true,eliminar:false},
+    {nombre:"Permisos",ver:true,crear:true,editar:true,eliminar:true},
+  ]},
+  {grupo:"Operación",items:[
+    {nombre:"Colegios",ver:true,crear:true,editar:true,eliminar:false},
+    {nombre:"Módulos",ver:true,crear:false,editar:true,eliminar:false},
+    {nombre:"Eventos",ver:true,crear:true,editar:true,eliminar:true},
+  ]},
+  {grupo:"Reportes",items:[
+    {nombre:"Reportes ministeriales",ver:true,crear:false,editar:false,eliminar:false},
+    {nombre:"Auditoría",ver:false,crear:false,editar:false,eliminar:false},
+  ]},
+];
+
+/* ══════════════════════════════════════════════════
+   NAV
+══════════════════════════════════════════════════ */
+const navItems = [
+  {id:"dashboard",label:"Dashboard",group:"Principal",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>`},
+  {id:"modulos",label:"Módulos",group:"Administración",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>`},
+  {id:"usuarios",label:"Usuarios",group:"Administración",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`},
+  {id:"colegios",label:"Colegios",group:"Operación",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`},
+  {id:"eventos",label:"Eventos",group:"Operación",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`},
+  {id:"permisos",label:"Permisos",group:"Seguridad",icon:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`},
+];
+
+function buildSidebar(){
+  const nav = document.getElementById('sidebar-nav');
+  const groups = [...new Set(navItems.map(n=>n.group))];
+  groups.forEach(g=>{
+    const lbl = document.createElement('div');
+    lbl.className='nav-group-label';
+    lbl.textContent=g;
+    nav.appendChild(lbl);
+    navItems.filter(n=>n.group===g).forEach(item=>{
+      const btn=document.createElement('button');
+      btn.className='nav-item';
+      btn.id='nav-'+item.id;
+      btn.innerHTML=item.icon+`<span>${item.label}</span>`;
+      btn.onclick=()=>navigate(item.id);
+      nav.appendChild(btn);
+    });
+  });
+}
+
+let currentPage='dashboard';
+function navigate(id){
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  const navEl=document.getElementById('nav-'+id);
+  if(navEl) navEl.classList.add('active');
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  const item=navItems.find(n=>n.id===id);
+  document.getElementById('breadcrumb-current').textContent=item?item.label:id;
+  currentPage=id;
+  if(id==='dashboard') initCharts();
+  closeMobileSidebar();
+}
+
+/* ══════════════════════════════════════════════════
+   LOGIN / LOGOUT
+══════════════════════════════════════════════════ */
+function enterApp(){
+  document.getElementById('page-login').classList.remove('active');
+  document.getElementById('app').style.display='flex';
+  buildSidebar();
+  renderAll();
+  navigate('dashboard');
+  setTimeout(initCharts,100);
+}
+function exitApp(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('page-login').classList.add('active');
+}
+
+/* ══════════════════════════════════════════════════
+   SIDEBAR TOGGLE
+══════════════════════════════════════════════════ */
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('collapsed');
+}
+
+/* ══════════════════════════════════════════════════
+   BADGE HELPER
+══════════════════════════════════════════════════ */
+function badge(status){
+  return `<span class="badge badge-${status}">${status}</span>`;
+}
+
+/* ══════════════════════════════════════════════════
+   RENDER ALL
+══════════════════════════════════════════════════ */
+function renderAll(){
+  renderActivity();
+  renderUpcomingEvents();
+  renderModulos();
+  renderUsuarios();
+  renderColegios();
+  renderEventos();
+  renderPermisos();
+}
+
+/* ── Activity ─────────────────── */
+function renderActivity(){
+  const tb=document.getElementById('activity-tbody');
+  tb.innerHTML=actividad.map(a=>`
+    <tr>
+      <td class="font-medium">${a.user}</td>
+      <td class="text-muted">${a.action} <span style="color:var(--fg)">${a.target}</span></td>
+      <td style="text-align:right" class="text-xs text-muted">${a.time}</td>
+    </tr>`).join('');
+}
+
+/* ── Upcoming events ──────────── */
+function renderUpcomingEvents(){
+  const el=document.getElementById('upcoming-events');
+  el.innerHTML=eventos.slice(0,4).map(e=>{
+    const parts=e.fecha.split('-');
+    return `<div class="event-item">
+      <div class="event-day"><span class="mon">${monthNames[parseInt(parts[1])-1]}</span><span class="num">${parts[0]}</span></div>
+      <div class="event-info">
+        <p>${e.titulo}</p>
+        <small>${e.hora} · ${e.lugar}</small>
+        <div style="margin-top:4px">${badge(e.estado)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+const monthNames=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+/* ── Modulos ──────────────────── */
+function renderModulos(data=modulos){
+  document.getElementById('modulos-count').textContent=`${data.length} resultados`;
+  document.getElementById('modulos-tbody').innerHTML=data.map(m=>`
+    <tr>
+      <td class="font-medium">${m.nombre}</td>
+      <td class="mono text-muted">${m.slug}</td>
+      <td>${badge(m.estado)}</td>
+      <td class="text-muted">${m.actualizado}</td>
+      <td style="text-align:right">
+        <button class="btn-icon" title="Ver"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button class="btn-icon" title="Editar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="btn-danger-ghost" title="Eliminar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+      </td>
+    </tr>`).join('');
+}
+function filterModulos(){
+  const q=document.getElementById('modulos-search').value.toLowerCase();
+  renderModulos(modulos.filter(m=>m.nombre.toLowerCase().includes(q)||m.slug.toLowerCase().includes(q)));
+}
+
+/* ── Usuarios ─────────────────── */
+function initials(name){return name.split(' ').slice(0,2).map(n=>n[0]).join('');}
+function renderUsuarios(data=usuarios){
+  document.getElementById('usuarios-count').textContent=`${data.length} usuarios`;
+  document.getElementById('usuarios-tbody').innerHTML=data.map(u=>`
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="user-avatar">${initials(u.nombre)}</div>
+          <div style="min-width:0">
+            <p class="font-medium truncate" style="max-width:160px">${u.nombre}</p>
+            <p class="text-xs text-muted truncate" style="max-width:160px">${u.correo}</p>
+          </div>
+        </div>
+      </td>
+      <td class="mono">${u.rut}</td>
+      <td><span class="tipo-badge">${u.tipo}</span></td>
+      <td class="text-muted">${u.colegio}</td>
+      <td>${badge(u.estado)}</td>
+      <td style="text-align:right">
+        <button class="btn-icon" title="Permisos" onclick="openPermisosModal('${u.nombre}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></button>
+        <button class="btn-icon" title="Editar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      </td>
+    </tr>`).join('');
+}
+function filterUsuarios(){
+  const q=document.getElementById('usuarios-search').value.toLowerCase();
+  renderUsuarios(usuarios.filter(u=>`${u.nombre} ${u.correo} ${u.colegio}`.toLowerCase().includes(q)));
+}
+
+/* ── Colegios ─────────────────── */
+function colegioInitials(nombre){
+  return nombre.split(' ').filter(w=>/^[A-ZÁÉÍÓÚ]/.test(w)).slice(0,2).map(w=>w[0]).join('');
+}
+function renderColegios(){
+  document.getElementById('colegios-grid').innerHTML=colegios.map(c=>`
+    <div class="colegio-card">
+      <div class="header">
+        <div class="colegio-avatar">${colegioInitials(c.nombre)}</div>
+        <div class="colegio-name">
+          <h3>${c.nombre}</h3>
+          <small><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${c.comuna} · RBD ${c.rbd}</small>
+          <div style="margin-top:6px">${badge(c.estado)}</div>
+        </div>
+        <div class="dropdown" style="margin-left:auto;flex-shrink:0">
+          <button class="btn-icon" onclick="toggleDropdown(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+          <div class="dropdown-menu">
+            <button class="dropdown-item">Ver detalle</button>
+            <button class="dropdown-item">Editar</button>
+            <button class="dropdown-item">Asignar usuarios</button>
+            <button class="dropdown-item danger">Desactivar</button>
+          </div>
+        </div>
+      </div>
+      <div class="colegio-stats">
+        <div class="colegio-stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><div class="val">${c.usuarios}</div><div class="lbl">Usuarios</div></div>
+        <div class="colegio-stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><div class="val">${c.modulos}</div><div class="lbl">Módulos</div></div>
+        <div class="colegio-stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><div class="val">${c.eventos}</div><div class="lbl">Eventos</div></div>
+      </div>
+    </div>`).join('');
+}
+
+/* ── Eventos / Calendar ───────── */
+function renderEventos(){
+  // Calendar header
+  const days=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  document.getElementById('cal-days-header').innerHTML=days.map(d=>`<div class="cal-day-header">${d}</div>`).join('');
+  
+  // Map events by day
+  const eventMap=new Map();
+  eventos.forEach(e=>{
+    const d=parseInt(e.fecha.split('-')[0],10);
+    if(!eventMap.has(d)) eventMap.set(d,[]);
+    eventMap.get(d).push(e);
+  });
+  
+  // Mayo 2026 starts on Friday (index 4 = Fri, offset from Mon=0 → offset=4)
+  const startOffset=4;
+  const totalDays=31;
+  let cells='';
+  for(let i=0;i<startOffset;i++) cells+=`<div class="cal-cell empty"></div>`;
+  for(let d=1;d<=totalDays;d++){
+    const evs=eventMap.get(d)||[];
+    const today=d===12?'today':'';
+    const evHTML=evs.map(e=>`<div class="cal-ev cal-ev-${e.estado}">${e.titulo}</div>`).join('');
+    cells+=`<div class="cal-cell ${today}"><span class="cal-num">${d}</span>${evHTML}</div>`;
+  }
+  document.getElementById('cal-body').innerHTML=cells;
+  
+  // Eventos list
+  document.getElementById('eventos-list').innerHTML=eventos.map(e=>`
+    <div style="border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px;transition:background .15s" onmouseenter="this.style.background='var(--bg)'" onmouseleave="this.style.background=''">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <div style="min-width:0">
+          <p class="font-medium truncate text-sm">${e.titulo}</p>
+          <p class="text-xs text-muted">${e.fecha} · ${e.hora} · ${e.lugar}</p>
+        </div>
+        ${badge(e.estado)}
+      </div>
+      <div style="margin-top:8px;display:flex;gap:4px">
+        <button class="btn btn-ghost btn-sm"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Revisar</button>
+        <button class="btn btn-ghost btn-sm"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+      </div>
+    </div>`).join('');
+}
+
+/* ── Permisos ─────────────────── */
+function renderPermisos(){
+  document.getElementById('permisos-grid').innerHTML=permisosMenus.map(g=>`
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span class="card-title">${g.grupo}</span></div>
+          <div class="card-desc">Permisos de menú</div>
+        </div>
+      </div>
+      <div class="card-body">
+        ${g.items.map(item=>`
+          <div class="perm-item">
+            <div class="perm-item-name">${item.nombre}</div>
+            <div class="perm-checks">
+              ${['ver','crear','editar','eliminar'].map(k=>`
+                <div class="perm-check">
+                  <span style="text-transform:capitalize">${k}</span>
+                  <label class="switch"><input type="checkbox" ${item[k]?'checked':''}/><div class="switch-track"></div><div class="switch-thumb"></div></label>
+                </div>`).join('')}
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════════════
+   CHARTS
+══════════════════════════════════════════════════ */
+let chartU=null,chartE=null;
+function initCharts(){
+  const labels=chartData.map(d=>d.mes);
+  const ctxU=document.getElementById('chart-usuarios');
+  const ctxE=document.getElementById('chart-eventos');
+  if(!ctxU||!ctxE) return;
+  if(chartU) chartU.destroy();
+  if(chartE) chartE.destroy();
+  
+  const grid={color:'rgba(0,0,0,.06)',drawTicks:false};
+  const tickStyle={color:'#9CA3AF',font:{family:'DM Sans',size:11}};
+  const tooltipStyle={backgroundColor:'#fff',titleColor:'#3F424A',bodyColor:'#6B7280',borderColor:'#E5E7EB',borderWidth:1,cornerRadius:8,padding:10,boxShadow:'0 4px 12px rgba(0,0,0,.1)'};
+
+  chartU=new Chart(ctxU,{
+    type:'line',
+    data:{labels,datasets:[{label:'Usuarios',data:chartData.map(d=>d.usuarios),borderColor:'#005B96',backgroundColor:'rgba(0,91,150,.1)',fill:true,tension:.4,borderWidth:2,pointRadius:3,pointBackgroundColor:'#005B96'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:tooltipStyle},scales:{x:{grid,ticks:tickStyle},y:{grid,ticks:tickStyle}}}
+  });
+  chartE=new Chart(ctxE,{
+    type:'bar',
+    data:{labels,datasets:[{label:'Eventos',data:chartData.map(d=>d.eventos),backgroundColor:'#3C8D2F',borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:tooltipStyle},scales:{x:{grid:{display:false},ticks:tickStyle},y:{grid,ticks:tickStyle}}}
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   MODALS
+══════════════════════════════════════════════════ */
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function closeModalOutside(e,id){if(e.target===document.getElementById(id)) closeModal(id);}
+
+function openPermisosModal(nombre){
+  document.getElementById('modal-permisos-nombre').textContent=`Permisos de ${nombre}`;
+  const menus=['Dashboard','Usuarios','Colegios','Módulos','Eventos','Reportes'];
+  document.getElementById('modal-permisos-body').innerHTML=menus.map((m,i)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:8px">
+      <span class="text-sm">${m}</span>
+      <label class="switch"><input type="checkbox" ${i%3!==2?'checked':''}/><div class="switch-track"></div><div class="switch-thumb"></div></label>
+    </div>`).join('');
+  openModal('modal-permisos-user');
+}
+
+/* ══════════════════════════════════════════════════
+   DROPDOWN
+══════════════════════════════════════════════════ */
+function toggleDropdown(btn){
+  const menu=btn.nextElementSibling;
+  document.querySelectorAll('.dropdown-menu.open').forEach(m=>{if(m!==menu) m.classList.remove('open');});
+  menu.classList.toggle('open');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.dropdown')) document.querySelectorAll('.dropdown-menu.open').forEach(m=>m.classList.remove('open'));
+});
+
+/* ══════════════════════════════════════════════════
+   MOBILE SIDEBAR
+══════════════════════════════════════════════════ */
+function toggleMobileSidebar(){
+  document.getElementById('sidebar').classList.toggle('mobile-open');
+}
+function closeMobileSidebar(){
+  document.getElementById('sidebar').classList.remove('mobile-open');
+}
+
+/* ══════════════════════════════════════════════════
+   KEYBOARD
+══════════════════════════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+    document.querySelectorAll('.dropdown-menu.open').forEach(m=>m.classList.remove('open'));
+  }
+});
+</script>
+</body>
+</html>

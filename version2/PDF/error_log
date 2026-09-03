@@ -1,0 +1,111 @@
+[10-Aug-2021 20:31:16 UTC] PHP Warning:  file(paises.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 10
+[10-Aug-2021 20:31:16 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/qaseduc/public_html/PDF/index.php on line 12
+[10-Aug-2021 20:31:17 UTC] PHP Warning:  file(paises.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 10
+[10-Aug-2021 20:31:17 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/qaseduc/public_html/PDF/index.php on line 12
+[10-Aug-2021 20:31:59 UTC] PHP Warning:  fopen(logo.png): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/fpdf.php on line 1257
+[10-Aug-2021 20:31:59 UTC] PHP Fatal error:  Uncaught Exception: FPDF error: Can't open image file: logo.png in /home/qaseduc/public_html/PDF/fpdf.php:271
+Stack trace:
+#0 /home/qaseduc/public_html/PDF/fpdf.php(1259): FPDF->Error('Can't open imag...')
+#1 /home/qaseduc/public_html/PDF/fpdf.php(885): FPDF->_parsepng('logo.png')
+#2 /home/qaseduc/public_html/PDF/index.php(10): FPDF->Image('logo.png', 10, 8, 33)
+#3 /home/qaseduc/public_html/PDF/fpdf.php(334): PDF->Header()
+#4 /home/qaseduc/public_html/PDF/index.php(36): FPDF->AddPage()
+#5 {main}
+  thrown in /home/qaseduc/public_html/PDF/fpdf.php on line 271
+[10-Aug-2021 20:31:59 UTC] PHP Warning:  fopen(logo.png): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/fpdf.php on line 1257
+[10-Aug-2021 20:31:59 UTC] PHP Fatal error:  Uncaught Exception: FPDF error: Can't open image file: logo.png in /home/qaseduc/public_html/PDF/fpdf.php:271
+Stack trace:
+#0 /home/qaseduc/public_html/PDF/fpdf.php(1259): FPDF->Error('Can't open imag...')
+#1 /home/qaseduc/public_html/PDF/fpdf.php(885): FPDF->_parsepng('logo.png')
+#2 /home/qaseduc/public_html/PDF/index.php(10): FPDF->Image('logo.png', 10, 8, 33)
+#3 /home/qaseduc/public_html/PDF/fpdf.php(334): PDF->Header()
+#4 /home/qaseduc/public_html/PDF/index.php(36): FPDF->AddPage()
+#5 {main}
+  thrown in /home/qaseduc/public_html/PDF/fpdf.php on line 271
+[10-Aug-2021 20:32:02 UTC] PHP Warning:  fopen(logo.png): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/fpdf.php on line 1257
+[10-Aug-2021 20:32:02 UTC] PHP Fatal error:  Uncaught Exception: FPDF error: Can't open image file: logo.png in /home/qaseduc/public_html/PDF/fpdf.php:271
+Stack trace:
+#0 /home/qaseduc/public_html/PDF/fpdf.php(1259): FPDF->Error('Can't open imag...')
+#1 /home/qaseduc/public_html/PDF/fpdf.php(885): FPDF->_parsepng('logo.png')
+#2 /home/qaseduc/public_html/PDF/index.php(10): FPDF->Image('logo.png', 10, 8, 33)
+#3 /home/qaseduc/public_html/PDF/fpdf.php(334): PDF->Header()
+#4 /home/qaseduc/public_html/PDF/index.php(36): FPDF->AddPage()
+#5 {main}
+  thrown in /home/qaseduc/public_html/PDF/fpdf.php on line 271
+[10-Aug-2021 20:32:11 UTC] PHP Warning:  fopen(logo.png): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/fpdf.php on line 1257
+[10-Aug-2021 20:32:11 UTC] PHP Fatal error:  Uncaught Exception: FPDF error: Can't open image file: logo.png in /home/qaseduc/public_html/PDF/fpdf.php:271
+Stack trace:
+#0 /home/qaseduc/public_html/PDF/fpdf.php(1259): FPDF->Error('Can't open imag...')
+#1 /home/qaseduc/public_html/PDF/fpdf.php(885): FPDF->_parsepng('logo.png')
+#2 /home/qaseduc/public_html/PDF/index.php(10): FPDF->Image('logo.png', 10, 8, 33)
+#3 /home/qaseduc/public_html/PDF/fpdf.php(334): PDF->Header()
+#4 /home/qaseduc/public_html/PDF/index.php(36): FPDF->AddPage()
+#5 {main}
+  thrown in /home/qaseduc/public_html/PDF/fpdf.php on line 271
+[10-Aug-2021 20:35:22 UTC] PHP Fatal error:  Uncaught Exception: FPDF error: GD extension is required for GIF support in /home/qaseduc/public_html/PDF/fpdf.php:271
+Stack trace:
+#0 /home/qaseduc/public_html/PDF/fpdf.php(1419): FPDF->Error('GD extension is...')
+#1 /home/qaseduc/public_html/PDF/fpdf.php(885): FPDF->_parsegif('logo.gif')
+#2 /home/qaseduc/public_html/PDF/index.php(10): FPDF->Image('logo.gif', 10, 8, 33)
+#3 /home/qaseduc/public_html/PDF/fpdf.php(334): PDF->Header()
+#4 /home/qaseduc/public_html/PDF/index.php(36): FPDF->AddPage()
+#5 {main}
+  thrown in /home/qaseduc/public_html/PDF/fpdf.php on line 271
+[10-Aug-2021 20:36:00 UTC] PHP Fatal error:  Uncaught Exception: FPDF error: GD extension is required for GIF support in /home/qaseduc/public_html/PDF/fpdf.php:271
+Stack trace:
+#0 /home/qaseduc/public_html/PDF/fpdf.php(1419): FPDF->Error('GD extension is...')
+#1 /home/qaseduc/public_html/PDF/fpdf.php(885): FPDF->_parsegif('logo.gif')
+#2 /home/qaseduc/public_html/PDF/index.php(10): FPDF->Image('logo.gif', 10, 8, 33)
+#3 /home/qaseduc/public_html/PDF/fpdf.php(334): PDF->Header()
+#4 /home/qaseduc/public_html/PDF/index.php(36): FPDF->AddPage()
+#5 {main}
+  thrown in /home/qaseduc/public_html/PDF/fpdf.php on line 271
+[10-Aug-2021 20:36:04 UTC] PHP Fatal error:  Uncaught Exception: FPDF error: GD extension is required for GIF support in /home/qaseduc/public_html/PDF/fpdf.php:271
+Stack trace:
+#0 /home/qaseduc/public_html/PDF/fpdf.php(1419): FPDF->Error('GD extension is...')
+#1 /home/qaseduc/public_html/PDF/fpdf.php(885): FPDF->_parsegif('logo.gif')
+#2 /home/qaseduc/public_html/PDF/index.php(10): FPDF->Image('logo.gif', 10, 8, 33)
+#3 /home/qaseduc/public_html/PDF/fpdf.php(334): PDF->Header()
+#4 /home/qaseduc/public_html/PDF/index.php(36): FPDF->AddPage()
+#5 {main}
+  thrown in /home/qaseduc/public_html/PDF/fpdf.php on line 271
+[10-Aug-2021 20:42:35 UTC] PHP Fatal error:  Uncaught Exception: FPDF error: GD extension is required for GIF support in /home/qaseduc/public_html/PDF/fpdf.php:271
+Stack trace:
+#0 /home/qaseduc/public_html/PDF/fpdf.php(1419): FPDF->Error('GD extension is...')
+#1 /home/qaseduc/public_html/PDF/fpdf.php(885): FPDF->_parsegif('logo.gif')
+#2 /home/qaseduc/public_html/PDF/index.php(10): FPDF->Image('logo.gif', 10, 8, 33)
+#3 /home/qaseduc/public_html/PDF/fpdf.php(334): PDF->Header()
+#4 /home/qaseduc/public_html/PDF/index.php(46): FPDF->AddPage()
+#5 {main}
+  thrown in /home/qaseduc/public_html/PDF/fpdf.php on line 271
+[10-Aug-2021 20:42:41 UTC] PHP Fatal error:  Uncaught Exception: FPDF error: GD extension is required for GIF support in /home/qaseduc/public_html/PDF/fpdf.php:271
+Stack trace:
+#0 /home/qaseduc/public_html/PDF/fpdf.php(1419): FPDF->Error('GD extension is...')
+#1 /home/qaseduc/public_html/PDF/fpdf.php(885): FPDF->_parsegif('logo.gif')
+#2 /home/qaseduc/public_html/PDF/index.php(10): FPDF->Image('logo.gif', 10, 8, 33)
+#3 /home/qaseduc/public_html/PDF/fpdf.php(334): PDF->Header()
+#4 /home/qaseduc/public_html/PDF/index.php(46): FPDF->AddPage()
+#5 {main}
+  thrown in /home/qaseduc/public_html/PDF/fpdf.php on line 271
+[10-Aug-2021 20:43:42 UTC] PHP Warning:  file_get_contents(20k_c1.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[10-Aug-2021 20:43:42 UTC] PHP Warning:  file_get_contents(20k_c2.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[10-Aug-2021 20:43:42 UTC] PHP Warning:  file_get_contents(20k_c1.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[10-Aug-2021 20:43:42 UTC] PHP Warning:  file_get_contents(20k_c2.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[10-Aug-2021 20:44:14 UTC] PHP Warning:  file_get_contents(20k_c1.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[10-Aug-2021 20:44:14 UTC] PHP Warning:  file_get_contents(20k_c2.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[04-Nov-2021 15:08:55 UTC] PHP Warning:  file_get_contents(20k_c1.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[04-Nov-2021 15:08:55 UTC] PHP Warning:  file_get_contents(20k_c2.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[05-Nov-2021 22:00:56 UTC] PHP Warning:  file_get_contents(20k_c1.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[05-Nov-2021 22:00:56 UTC] PHP Warning:  file_get_contents(20k_c2.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[24-Nov-2021 12:00:55 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/cpanel/ea-php56/root/usr/lib64/php/modules/msql.so' - /opt/cpanel/ea-php56/root/usr/lib64/php/modules/msql.so: cannot open shared object file: No such file or directory in Unknown on line 0
+[24-Nov-2021 12:00:55 UTC] PHP Warning:  file_get_contents(20k_c1.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[24-Nov-2021 12:00:55 UTC] PHP Warning:  file_get_contents(20k_c2.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[24-Nov-2021 12:00:56 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/cpanel/ea-php56/root/usr/lib64/php/modules/msql.so' - /opt/cpanel/ea-php56/root/usr/lib64/php/modules/msql.so: cannot open shared object file: No such file or directory in Unknown on line 0
+[24-Nov-2021 12:00:56 UTC] PHP Warning:  file_get_contents(20k_c1.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[24-Nov-2021 12:00:56 UTC] PHP Warning:  file_get_contents(20k_c2.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[15-Jan-2022 12:50:05 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/cpanel/ea-php56/root/usr/lib64/php/modules/msql.so' - /opt/cpanel/ea-php56/root/usr/lib64/php/modules/msql.so: cannot open shared object file: No such file or directory in Unknown on line 0
+[15-Jan-2022 12:50:05 UTC] PHP Warning:  file_get_contents(20k_c1.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[15-Jan-2022 12:50:05 UTC] PHP Warning:  file_get_contents(20k_c2.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[17-Feb-2022 12:09:15 UTC] PHP Warning:  PHP Startup: Unable to load dynamic library '/opt/cpanel/ea-php56/root/usr/lib64/php/modules/msql.so' - /opt/cpanel/ea-php56/root/usr/lib64/php/modules/msql.so: cannot open shared object file: No such file or directory in Unknown on line 0
+[17-Feb-2022 12:09:15 UTC] PHP Warning:  file_get_contents(20k_c1.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80
+[17-Feb-2022 12:09:15 UTC] PHP Warning:  file_get_contents(20k_c2.txt): failed to open stream: No such file or directory in /home/qaseduc/public_html/PDF/index.php on line 80

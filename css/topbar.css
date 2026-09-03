@@ -1,3 +1,224 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
+
+body:has(.seduc-sidebar) {
+  padding-left: 260px;
+}
+
+.seduc-sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 120;
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  background: #3f424a;
+  color: #eef2f7;
+  border-right: 1px solid rgba(255,255,255,.09);
+  box-shadow: 12px 0 32px rgba(15,23,42,.18);
+}
+
+.seduc-sidebar__brand {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255,255,255,.09);
+}
+
+.seduc-sidebar__logo {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: #005b96;
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(0,91,150,.28);
+}
+
+.seduc-sidebar__logo i {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.seduc-sidebar__brand-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.12;
+}
+
+.seduc-sidebar__title {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.seduc-sidebar__subtitle {
+  margin-top: 3px;
+  color: rgba(238,242,247,.62);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.seduc-sidebar__nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 8px;
+}
+
+.seduc-sidebar__group {
+  margin-bottom: 18px;
+}
+
+.seduc-sidebar__group-label {
+  padding: 0 12px 9px;
+  color: rgba(238,242,247,.46);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.seduc-sidebar__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.seduc-sidebar__link {
+  position: relative;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: 7px;
+  color: rgba(238,242,247,.86);
+  font-size: 14px;
+  font-weight: 750;
+  transition: background .16s ease, color .16s ease, padding-left .16s ease;
+}
+
+.seduc-sidebar__link:hover {
+  background: rgba(255,255,255,.08);
+  color: #fff;
+}
+
+.seduc-sidebar__link.is-active {
+  padding-left: 10px;
+  background: rgba(0,91,150,.38);
+  color: #fff;
+  border-left: 2px solid #f4b000;
+}
+
+.seduc-sidebar__icon {
+  width: 18px;
+  flex: 0 0 18px;
+  display: inline-grid;
+  place-items: center;
+  color: rgba(255,255,255,.82);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.seduc-sidebar__link.is-active .seduc-sidebar__icon {
+  color: #f4b000;
+}
+
+.seduc-sidebar__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.seduc-sidebar__footer {
+  border-top: 1px solid rgba(255,255,255,.09);
+  padding: 10px 8px;
+}
+
+.seduc-sidebar__footer .topbar__right {
+  display: block;
+}
+
+.seduc-sidebar__footer .userbtn {
+  width: 100%;
+  justify-content: flex-start;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: rgba(238,242,247,.9);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.seduc-sidebar__footer .userbtn:hover {
+  background: rgba(255,255,255,.08);
+  box-shadow: none;
+}
+
+.seduc-sidebar__footer .userbtn__avatar {
+  border-radius: 8px;
+  background: #005b96;
+  color: #fff;
+}
+
+.seduc-sidebar__footer .userbtn__name {
+  color: #fff;
+}
+
+.seduc-sidebar__footer .userbtn__role,
+.seduc-sidebar__footer .userbtn__chev {
+  color: rgba(238,242,247,.58);
+}
+
+.seduc-sidebar__footer .dropdown {
+  left: calc(100% + 10px);
+  right: auto;
+  bottom: 0;
+  top: auto;
+  border-radius: 8px;
+}
+
+@media (max-width: 900px) {
+  body:has(.seduc-sidebar) {
+    padding-left: 72px;
+  }
+
+  .seduc-sidebar {
+    width: 72px;
+  }
+
+  .seduc-sidebar__brand {
+    justify-content: center;
+    padding: 0 10px;
+  }
+
+  .seduc-sidebar__brand-text,
+  .seduc-sidebar__group-label,
+  .seduc-sidebar__label,
+  .seduc-sidebar__footer .userbtn__text,
+  .seduc-sidebar__footer .userbtn__chev {
+    display: none;
+  }
+
+  .seduc-sidebar__link {
+    justify-content: center;
+    padding: 10px 0;
+  }
+
+  .seduc-sidebar__link.is-active {
+    padding-left: 0;
+    border-left: 0;
+    box-shadow: inset 3px 0 0 #f4b000;
+  }
+}
+
 .topbar {
   position: sticky; top: 0; z-index: 80;
   background: rgba(255,255,255,.92);

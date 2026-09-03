@@ -1,0 +1,48 @@
+/* ── Reset ───────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── Design tokens ───────────────────────────────────────────────── */
+:root{
+  --bg:#F4F5F7;
+  --card:#FFFFFF;
+  --sidebar:#252830;
+  --sidebar-fg:rgba(255,255,255,.87);
+  --sidebar-muted:rgba(255,255,255,.38);
+  --sidebar-accent:#2E3240;
+  --sidebar-active-border:#F4B000;
+  --blue:#005B96;
+  --blue-light:rgba(0,91,150,.1);
+  --blue-mid:rgba(0,91,150,.18);
+  --green:#3C8D2F;
+  --green-light:rgba(60,141,47,.1);
+  --yellow:#F4B000;
+  --yellow-light:rgba(244,176,0,.14);
+  --graphite:#3F424A;
+  --border:#E5E7EB;
+  --muted:#6B7280;
+  --fg:#3F424A;
+  --danger:#C0392B;
+  --danger-light:rgba(192,57,43,.1);
+  --success:#3C8D2F;
+  --success-light:rgba(60,141,47,.1);
+  --warning:#B8860B;
+  --warning-light:rgba(244,176,0,.15);
+  --radius:8px;
+  --shadow-card:0 1px 2px rgba(0,0,0,.04),0 1px 4px rgba(0,0,0,.06);
+  --shadow-elevated:0 8px 24px -8px rgba(30,40,70,.18);
+  --sidebar-w:260px;
+  --topbar-h:64px;
+  --transition:200ms ease;
+}
+
+/* ── Base elements ───────────────────────────────────────────────── */
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+html,body{height:100%;}
+button{cursor:pointer;font-family:inherit;}
+input,select{font-family:inherit;}
+svg{display:block;flex-shrink:0;}
+
+/* ── Scrollbar global ────────────────────────────────────────────── */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:99px;}

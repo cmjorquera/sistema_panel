@@ -39,12 +39,12 @@ function abrirModalContenedorEditar(btn) {
     var imagenActual = tile.dataset.tileImagen || '';
     if (imagenActual) {
         var nameEl = document.querySelector('[data-contenedor-preview-name]');
-        nameEl.textContent = 'Imagen actual: ' + imagenActual;
+        nameEl.textContent = 'Imagen actual: ' + imagenActual.split('/').pop();
         nameEl.classList.add('is-visible');
 
         var frame = document.querySelector('[data-contenedor-preview-frame]');
         var img   = frame.querySelector('img');
-        img.src = 'imagenes/' + encodeURIComponent(imagenActual);
+        img.src = 'imagenes/' + imagenActual.split('/').map(encodeURIComponent).join('/');
         img.onload = function() {
             frame.classList.add('is-ready');
             frame.querySelector('[data-contenedor-preview-empty]').style.display = 'none';
@@ -244,7 +244,7 @@ function _normalizarUrl(url) {
 function _agregarTileAlGrid(c) {
     var grid = document.querySelector('.tiles');
     var href = _normalizarUrl(c.url_);
-    var src  = c.imagen ? 'imagenes/' + encodeURIComponent(c.imagen) : 'imagenes/google.png';
+    var src  = c.imagen ? 'imagenes/' + c.imagen.split('/').map(encodeURIComponent).join('/') : 'imagenes/google.png';
     var nombre = _escaparHtml(c.nombre);
 
     var article = document.createElement('article');
@@ -284,7 +284,7 @@ function _actualizarTileEnGrid(c) {
     tile.dataset.tileImagen = c.imagen || '';
 
     var href = _normalizarUrl(c.url_);
-    var src  = c.imagen ? 'imagenes/' + encodeURIComponent(c.imagen) : 'imagenes/google.png';
+    var src  = c.imagen ? 'imagenes/' + c.imagen.split('/').map(encodeURIComponent).join('/') : 'imagenes/google.png';
 
     var link = tile.querySelector('.tile__link');
     if (link) { link.href = href; link.title = c.nombre; }

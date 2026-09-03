@@ -25,12 +25,18 @@ function construirSrcImagen(string $imagen): string
     if ($imagen === '') {
         return 'imagenes/google.png';
     }
-    $archivo = basename($imagen);
-    $rutaFisica = __DIR__ . '/imagenes/' . $archivo;
+    // Previene directory traversal
+    if (strpos($imagen, '..') !== false) {
+        return 'imagenes/google.png';
+    }
+    $imagen     = ltrim($imagen, '/');
+    $rutaFisica = __DIR__ . '/imagenes/' . $imagen;
     if (!is_file($rutaFisica)) {
         return 'imagenes/google.png';
     }
-    return 'imagenes/' . rawurlencode($archivo);
+    // Codifica cada segmento del path por separado para preservar las barras
+    $segmentos = explode('/', $imagen);
+    return 'imagenes/' . implode('/', array_map('rawurlencode', $segmentos));
 }
 
 $db = new Conexion();
@@ -66,9 +72,9 @@ $db->cerrar();
 
     <div class="container stage__inner">
 
-      <!-- Barra de búsqueda -->
+      <!-- Barra de bÃºsqueda -->
       <div class="searchbar">
-        <span class="searchbar__icon">🔎</span>
+        <span class="searchbar__icon">ðŸ”Ž</span>
         <input class="searchbar__input"
                placeholder="Buscar acceso..."
                oninput="filtrarTiles(this.value)" />
@@ -105,12 +111,12 @@ $db->cerrar();
                  rel="noopener noreferrer"
                  aria-label="<?= $nombre ?>"></a>
 
-              <!-- Menú de 3 puntos: visible solo al pasar el cursor (ver css/index.css) -->
+              <!-- MenÃº de 3 puntos: visible solo al pasar el cursor (ver css/index.css) -->
               <div class="tile__actions">
                 <button class="tile__menu-btn"
                         type="button"
                         aria-label="Opciones"
-                        onclick="toggleMenuTile(this)">⋯</button>
+                        onclick="toggleMenuTile(this)">â‹¯</button>
                 <div class="tile__menu" role="menu">
                   <button class="tile__menu-item"
                           type="button"
@@ -138,9 +144,9 @@ $db->cerrar();
 
   </main>
 
-  <!-- Rail: botón de abrir calendario usa onclick definido en js/calendario_panel.js -->
-  <!-- Rail: botón de abrir contactos usa onclick definido en js/contactos_panel.js  -->
-  <!-- Rail: botón de nuevo contenedor usa onclick definido en js/contenedor_modal.js -->
+  <!-- Rail: botÃ³n de abrir calendario usa onclick definido en js/calendario_panel.js -->
+  <!-- Rail: botÃ³n de abrir contactos usa onclick definido en js/contactos_panel.js  -->
+  <!-- Rail: botÃ³n de nuevo contenedor usa onclick definido en js/contenedor_modal.js -->
 
   <script src="js/contactos_panel.js"></script>
   <script src="js/launcher.js"></script>
